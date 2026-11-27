@@ -1,6 +1,6 @@
 # Contexto de mis proyectos (para ChatGPT y Claude)
 
-Actualizado: 26/11/2026. Puede estar desactualizado: ante una duda, preguntá antes de asumir.
+Actualizado: 27/11/2026. Puede estar desactualizado: ante una duda, preguntá antes de asumir.
 
 ## Cómo trabajar conmigo
 
@@ -14,6 +14,8 @@ Actualizado: 26/11/2026. Puede estar desactualizado: ante una duda, preguntá an
 **Qué es:** sitio de recursos para docentes de educación inicial que trabajan con niños de 3 a 5 años. Objetivo: monetizar con Google AdSense.
 
 **Técnica:** Astro, sitio estático, publicado en Vercel. Comunidad docente con Supabase.
+
+**Dónde está el código:** repo privado `eduardorovito/salainicial` en GitHub, conectado al proyecto `sala-inicial` de Vercel. **Cada push a `main` publica en salainicial.com**: trabajar en una rama y pedirme el OK antes de fusionar.
 
 **Reglas del contenido**
 - Español neutro con "tú" en las páginas.
@@ -32,6 +34,8 @@ Actualizado: 26/11/2026. Puede estar desactualizado: ante una duda, preguntá an
 - Comunidad: el ingreso por correo está habilitado, pero falta probarlo. Google todavía no está habilitado.
 
 **Pendientes**
+- Cambiar «fichas» por «actividades» en el sitio, separando «actividades para imprimir» de «experiencias y salidas» (en el sitio ya existe la sección «Actividades y salidas»: que no se mezclen).
+- Crear la tarea diaria de contenido (1 actividad imprimible, 1 nota de blog, efemérides, cuentos o juegos; publicar solo si compila).
 - Probar el ingreso por correo a la comunidad.
 - Publicar (con mi aprobación) los cambios de interlineado y las cinco notas de artistas reescritas. Antes, comparar con lo publicado.
 - Cotejar los objetivos de las notas de artistas con el diseño curricular vigente de la Ciudad de Buenos Aires.
@@ -53,10 +57,19 @@ Actualizado: 26/11/2026. Puede estar desactualizado: ante una duda, preguntá an
 
 ## Otros proyectos (completar)
 
-- La Facturadora:
+El inventario completo está en la planilla «Inventario de proyectos de Edu» (en Claude). Lo de abajo se completa de a poco.
+
+- La Facturadora: repo `la-facturadora` en GitHub, con proyecto de Vercel; todavía no está online.
 - Kits Imprimibles:
 - Radar freelancer:
 - Agente Upwork:
+
+## Cómo nos pasamos el trabajo entre IAs
+
+1. Este repo es el lugar común: `AGENTS.md` (reglas para cualquier IA), `CLAUDE.md` (reglas del proyecto), este archivo (estado) y `BITACORA.md` (qué hizo cada IA).
+2. Al empezar con una IA, que lea esos cuatro archivos.
+3. Al terminar, que agregue una entrada arriba de `BITACORA.md` y actualice "Estado" y "Pendientes" acá.
+4. Si una IA no puede leer el repo, pegale este archivo y la última entrada de la bitácora.
 
 ## Al terminar cada charla
 
