@@ -1,0 +1,37 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const figuras = {
+  taza: 'M-14 -8h22v3h4a5 5 0 0 1 0 10H7a9 9 0 0 1-8 7h-4a9 9 0 0 1-9-9ZM8-2v4h4a2 2 0 0 0 0-4Z',
+  hoja: 'M-14 10Q-18-5 13-13Q16 13-9 13L-16 17l-2-2Z',
+  pez: 'M-17 0Q-7-15 9-5l10-6v22L9 5Q-7 15-17 0Z',
+  paraguas: 'M-19-1Q-17-16 0-16Q17-16 19-1H2v12a6 6 0 0 1-12 0h3a3 3 0 0 0 6 0V-1Z',
+};
+const detalles = {
+  taza: 'M-10-4h14M-10 0h13',
+  hoja: 'M-12 12L9-9M-4 3l1-7M1-2l7-1',
+  pez: 'M3-6Q-1 0 3 6M-10 0h0.5',
+  paraguas: 'M-10-3Q-8-12 0-15Q8-12 10-3',
+};
+const objetos = ['taza', 'hoja', 'pez', 'paraguas'] as const;
+const sombras = ['hoja', 'paraguas', 'taza', 'pez'] as const;
+---
+
+<SheetFrame title="Une cada objeto con su sombra" label="A la izquierda, una taza, una hoja, un pez y un paraguas. A la derecha, sus siluetas en distinto orden">
+  <text x="15" y="50" font-size="4.4" fill="#1f1a17">Mira el borde de cada figura y únela con su silueta.</text>
+  {objetos.map((figura, i) => {
+    const y = 82 + i * 54;
+    return (
+      <g stroke="#292421" stroke-linecap="round" stroke-linejoin="round">
+        <g transform={`translate(44 ${y}) scale(1.35)`}>
+          <path d={figuras[figura]} fill="white" fill-rule="evenodd" stroke-width="0.8" />
+          <path d={detalles[figura]} fill="none" stroke-width="0.65" />
+        </g>
+        <circle cx="76" cy={y} r="1.7" fill="#292421" stroke="none" />
+        <circle cx="134" cy={y} r="1.7" fill="#292421" stroke="none" />
+        <path d={figuras[sombras[i]]} transform={`translate(166 ${y}) scale(1.35)`} fill="#292421" fill-rule="evenodd" stroke="none" />
+      </g>
+    );
+  })}
+  <text x="15" y="276" font-size="4.4" fill="#1f1a17">Cuéntale a alguien qué pista te ayudó a elegir.</text>
+</SheetFrame>

@@ -1,0 +1,92 @@
+---
+import { site } from '../site.config.mjs';
+const measurementId = site.analyticsId;
+---
+
+<aside class="analytics-choice" data-analytics-choice aria-label="Preferencias de medición" hidden>
+  <p>¿Nos permites medir las visitas con Google Analytics? <a href="/privacidad/#medicion">Más información</a>.</p>
+  <div class="analytics-actions">
+    <button type="button" data-analytics-answer="denied">Rechazar</button>
+    <button type="button" data-analytics-answer="granted">Aceptar</button>
+  </div>
+</aside>
+
+<script define:vars={{ measurementId }}>
+  const storageKey = 'salainicial-analytics';
+  const choice = document.querySelector('[data-analytics-choice]');
+  const settings = document.querySelector('[data-analytics-settings]');
+  let started = false;
+  let openedFromSettings = false;
+  let preference;
+
+  try { preference = localStorage.getItem(storageKey); } catch {}
+
+  function startAnalytics() {
+    if (started || preference !== 'granted') return;
+    started = true;
+    window.dataLayer ||= [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'granted',
+    });
+    window.gtag('js', new Date());
+    window.gtag('config', measurementId, { allow_google_signals: false, allow_ad_personalization_signals: false });
+    const tag = document.createElement('script');
+    tag.async = true;
+    tag.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+    document.head.append(tag);
+  }
+
+  settings.hidden = false;
+  choice.hidden = preference === 'granted' || preference === 'denied';
+  settings.addEventListener('click', () => {
+    openedFromSettings = true;
+    choice.hidden = false;
+    choice.querySelector('button').focus();
+  });
+  choice.addEventListener('click', (event) => {
+    const answer = event.target.closest('[data-analytics-answer]')?.dataset.analyticsAnswer;
+    if (!answer) return;
+    preference = answer;
+    try { localStorage.setItem(storageKey, answer); } catch {}
+    choice.hidden = true;
+    if (openedFromSettings) settings.focus();
+    openedFromSettings = false;
+    window[`ga-disable-${measurementId}`] = answer === 'denied';
+    if (started) window.gtag('consent', 'update', { analytics_storage: answer });
+    startAnalytics();
+  });
+
+  if (preference === 'granted') window.addEventListener('load', startAnalytics, { once: true });
+</script>
+
+<style>
+  .analytics-choice {
+    position: fixed;
+    z-index: 15;
+    inset: auto 1rem 1rem auto;
+    max-width: min(27rem, calc(100% - 2rem));
+    padding: 1rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    font-size: 0.875rem;
+  }
+  .analytics-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  button {
+    min-height: 2.75rem;
+    padding: 0.25rem 0.8rem;
+    border: 1px solid var(--ink);
+    border-radius: 2rem;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+  }
+  button[data-analytics-answer='granted'] { background: var(--ink); color: var(--on-ink); }
+  @media print { .analytics-choice { display: none; } }
+</style>

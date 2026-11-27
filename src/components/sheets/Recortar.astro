@@ -1,0 +1,67 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+// Cinco tiras para recortar, de la más fácil (recta) a la más difícil (almenas).
+const ink = '#1f1a17';
+const body = "'Atkinson Hyperlegible Next', Arial, sans-serif";
+const x0 = 32;
+const x1 = 192;
+const top = 58;
+const h = 38;
+const gap = 6;
+
+const recta = (y: number) => `M${x0},${y} L${x1},${y}`;
+const ondas = (y: number) => {
+  let d = `M${x0},${y}`;
+  for (let k = 0; k < 10; k++) {
+    const cx = x0 + 8 + 16 * k;
+    d += ` Q${cx},${y + (k % 2 === 0 ? -12 : 12)} ${x0 + 16 * (k + 1)},${y}`;
+  }
+  return d;
+};
+const zigzag = (y: number) => {
+  let d = `M${x0},${y}`;
+  for (let k = 1; k <= 16; k++) d += ` L${x0 + 10 * k},${y + (k % 2 === 1 ? -7 : 7)}`;
+  return d;
+};
+const arcos = (y: number) => {
+  let d = `M${x0},${y + 4}`;
+  for (let k = 0; k < 10; k++) d += ' a8,8 0 0 1 16,0';
+  return d;
+};
+const almenas = (y: number) => {
+  let d = `M${x0},${y + 6}`;
+  for (let k = 0; k < 5; k++) {
+    const x = x0 + 32 * k;
+    d += ` L${x + 16},${y + 6} L${x + 16},${y - 6} L${x + 32},${y - 6} L${x + 32},${y + 6}`;
+  }
+  return d;
+};
+
+const tiras = [recta, ondas, zigzag, arcos, almenas].map((fn, i) => {
+  const y = top + i * (h + gap);
+  return { y, cy: y + h / 2, d: fn(y + h / 2) };
+});
+
+const tijera = (x: number, y: number) =>
+  `<circle cx="${x - 5}" cy="${y - 3.2}" r="2.4" /><circle cx="${x - 5}" cy="${y + 3.2}" r="2.4" />` +
+  `<path d="M${x - 3},${y - 1.8} L${x + 7},${y + 2.4}" /><path d="M${x - 3},${y + 1.8} L${x + 7},${y - 2.4}" />`;
+---
+
+<SheetFrame title="Recorta por las líneas" label="Ficha para recortar con cinco líneas punteadas: recta, ondulada, en zigzag, en arcos y en almenas, cada una con una tijera al comienzo">
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family={body}>
+    Recorta cada tira por la línea punteada, desde la tijera hacia la derecha.
+  </text>
+  {
+    tiras.map((t) => (
+      <g>
+        <rect x="15" y={t.y} width="180" height={h} rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+        <g fill="none" stroke={ink} stroke-width="0.7" set:html={tijera(20, t.cy)} />
+        <path d={t.d} fill="none" stroke={ink} stroke-width="0.75" stroke-dasharray="2.6 1.8" stroke-linejoin="round" />
+      </g>
+    ))
+  }
+  <text x="15" y="282" font-size="4" fill="#4a423d" font-family={body}>
+    Si es la primera vez, separen antes las tiras por el borde gris y entreguen una a la vez.
+  </text>
+</SheetFrame>

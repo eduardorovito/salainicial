@@ -1,0 +1,74 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+// Seis caminos punteados, de lo más simple a lo más complejo.
+const x0 = 34;
+const x1 = 174;
+const rows = [58, 96, 134, 172, 210, 248];
+
+const pts = (fn: (x: number) => number, step = 0.5) => {
+  const out: string[] = [];
+  for (let x = x0; x <= x1 + 0.001; x += step) out.push(`${x.toFixed(2)},${fn(x).toFixed(2)}`);
+  return 'M' + out.join(' L');
+};
+
+const recta = (y: number) => `M${x0},${y} H${x1}`;
+const ondas = (y: number) => pts((x) => y + 7 * Math.sin(((x - x0) / 28) * 2 * Math.PI));
+const zigzag = (y: number) => {
+  const p = 17.5;
+  return pts((x) => {
+    const t = ((x - x0) % p) / p;
+    return y + 8 * (t < 0.5 ? -1 + 4 * t : 3 - 4 * t);
+  }, 0.25);
+};
+const puentes = (y: number) => pts((x) => y + 6 - 13 * Math.abs(Math.sin(((x - x0) / 23.33) * Math.PI)));
+const escalones = (y: number) => {
+  let d = `M${x0},${y + 6}`;
+  const w = 10;
+  let up = true;
+  for (let x = x0; x < x1 - 0.01; x += w) {
+    d += ` V${up ? y - 6 : y + 6} H${Math.min(x + w, x1)}`;
+    up = !up;
+  }
+  return d;
+};
+const rulos = (y: number) => {
+  const a = 20 / (2 * Math.PI);
+  const b = 6.5;
+  // Empieza a la altura de la pelotita y hace los rulos hacia arriba, como en la letra cursiva.
+  const t0 = (3 * Math.PI) / 2;
+  const tMax = t0 + (x1 - x0) / a;
+  const out: string[] = [];
+  for (let t = t0; t <= tMax; t += 0.05) {
+    out.push(`${(x0 + a * (t - t0) - b * (Math.sin(t) + 1)).toFixed(2)},${(y - b * Math.cos(t)).toFixed(2)}`);
+  }
+  return 'M' + out.join(' L');
+};
+
+const caminos = [recta, ondas, zigzag, puentes, escalones, rulos].map((fn, i) => ({ d: fn(rows[i]), y: rows[i] }));
+
+const star = (cx: number, cy: number, r: number) => {
+  const p: string[] = [];
+  for (let i = 0; i < 10; i++) {
+    const rad = i % 2 === 0 ? r : r * 0.45;
+    const ang = -Math.PI / 2 + (i * Math.PI) / 5;
+    p.push(`${(cx + rad * Math.cos(ang)).toFixed(2)},${(cy + rad * Math.sin(ang)).toFixed(2)}`);
+  }
+  return `M${p.join(' L')} Z`;
+};
+---
+
+<SheetFrame title="Sigue los caminos" label="Ficha de trazos: seis caminos punteados para repasar, de una línea recta a rulos">
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif">
+    Empieza en la pelotita y llega hasta la estrella. Después, pinta las estrellas.
+  </text>
+  {
+    caminos.map((c) => (
+      <g>
+        <circle cx="24" cy={c.y} r="4.2" fill="#1f1a17" />
+        <path d={c.d} fill="none" stroke="#6b625d" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 3.1" />
+        <path d={star(186, c.y, 7)} fill="none" stroke="#1f1a17" stroke-width="0.7" stroke-linejoin="round" />
+      </g>
+    ))
+  }
+</SheetFrame>

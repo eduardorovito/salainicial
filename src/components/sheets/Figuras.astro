@@ -1,0 +1,52 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+// Cuatro figuras grandes para repasar con puntos y un dibujo hecho con figuras para reconocerlas.
+const ink = '#1f1a17';
+const body = "'Atkinson Hyperlegible Next', Arial, sans-serif";
+const sheetFont = "Andika, 'Atkinson Hyperlegible Next', Arial, sans-serif";
+
+const celdas = [
+  { nombre: 'círculo', forma: (cx: number, cy: number) => ({ d: `M${cx},${cy - 25} A25,25 0 1 1 ${cx - 0.01},${cy - 25}`, inicio: [cx, cy - 25] }) },
+  { nombre: 'cuadrado', forma: (cx: number, cy: number) => ({ d: `M${cx - 24},${cy - 24} H${cx + 24} V${cy + 24} H${cx - 24} Z`, inicio: [cx - 24, cy - 24] }) },
+  { nombre: 'triángulo', forma: (cx: number, cy: number) => ({ d: `M${cx},${cy - 26} L${cx + 28},${cy + 22} H${cx - 28} Z`, inicio: [cx, cy - 26] }) },
+  { nombre: 'rectángulo', forma: (cx: number, cy: number) => ({ d: `M${cx - 35},${cy - 19} H${cx + 35} V${cy + 19} H${cx - 35} Z`, inicio: [cx - 35, cy - 19] }) },
+].map((c, i) => {
+  const x = 15 + (i % 2) * 91;
+  const y = 56 + Math.floor(i / 2) * 84;
+  const cx = x + 44.5;
+  const cy = y + 36;
+  return { ...c, x, y, cx, ...c.forma(cx, cy) };
+});
+---
+
+<SheetFrame title="Repasa las figuras" label="Ficha de figuras geométricas: círculo, cuadrado, triángulo y rectángulo punteados para repasar, y una casa con sol dibujada con figuras para pintar">
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family={body}>
+    Repasa cada figura con el dedo y después con un lápiz. Empieza en el punto negro.
+  </text>
+  {
+    celdas.map((c) => (
+      <g>
+        <rect x={c.x} y={c.y} width="89" height="80" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+        <path d={c.d} fill="none" stroke="#8f857e" stroke-width="1.3" stroke-dasharray="0 2.8" stroke-linecap="round" />
+        <circle cx={c.inicio[0]} cy={c.inicio[1]} r="1.6" fill={ink} />
+        <text x={c.cx} y={c.y + 74} font-size="6.5" font-family={sheetFont} font-weight="700" text-anchor="middle" fill={ink}>{c.nombre}</text>
+      </g>
+    ))
+  }
+  <rect x="15" y="228" width="180" height="50" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+  <g fill="none" stroke={ink} stroke-width="0.8" stroke-linejoin="round">
+    <path d="M22,250 L39,236 L56,250 Z" />
+    <rect x="24.5" y="250" width="29" height="24" />
+    <rect x="34.5" y="262" width="9" height="12" />
+    <circle cx="48" cy="256" r="3" />
+    <circle cx="72" cy="240" r="6" />
+  </g>
+  <g font-family={body} fill={ink}>
+    <text x="90" y="246" font-size="5" font-weight="700">¿Qué figuras hay en este dibujo?</text>
+    <text x="90" y="255" font-size="4">Pinta los círculos de rojo</text>
+    <text x="90" y="261.5" font-size="4">y los cuadrados de azul,</text>
+    <text x="90" y="268" font-size="4">los triángulos de amarillo</text>
+    <text x="90" y="274.5" font-size="4">y los rectángulos de verde.</text>
+  </g>
+</SheetFrame>

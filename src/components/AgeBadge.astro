@@ -1,0 +1,46 @@
+---
+interface Props {
+  edad: string;
+  href?: string;
+}
+
+const { edad, href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag class="age-badge" data-edad={edad} href={href}>{edad} años</Tag>
+
+<style>
+  .age-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0.4em 0.75em;
+    border-radius: var(--radius-pill);
+    background: var(--badge-color, var(--pizarra-700));
+    color: var(--blanco);
+    font: 700 0.75rem/1.25 var(--font-body);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .age-badge::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    flex: none;
+    background: currentColor;
+  }
+  .age-badge[data-edad='3'] { --badge-color: var(--mandarina-700); }
+  .age-badge[data-edad='3']::before { border-radius: 50%; }
+  .age-badge[data-edad='4'] { --badge-color: var(--sol-700); }
+  .age-badge[data-edad='4']::before { border-radius: 2px; }
+  .age-badge[data-edad='5'] { --badge-color: var(--cielo-700); }
+  .age-badge[data-edad='5']::before { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  a.age-badge {
+    min-height: 44px;
+    padding-inline: var(--space-3);
+    font-size: var(--step--1);
+  }
+  a.age-badge:hover { text-decoration: underline; }
+</style>

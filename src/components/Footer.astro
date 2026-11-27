@@ -1,0 +1,148 @@
+---
+import Logo from './Logo.astro';
+import { site, categories, redes } from '../site.config.mjs';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <Logo />
+      <p>{site.description}</p>
+    </div>
+    <nav aria-labelledby="footer-secciones">
+      <p class="footer-title" id="footer-secciones">Secciones</p>
+      <ul>
+        {categories.map((c) => <li><a href={`/${c.id}/`}>{c.name}</a></li>)}
+      </ul>
+    </nav>
+    <nav aria-labelledby="footer-edades">
+      <p class="footer-title" id="footer-edades">Por edad</p>
+      <ul>
+        <li><a href="/edad/3-anos/">3 años</a></li>
+        <li><a href="/edad/4-anos/">4 años</a></li>
+        <li><a href="/edad/5-anos/">5 años</a></li>
+      </ul>
+    </nav>
+    <nav aria-labelledby="footer-sitio">
+      <p class="footer-title" id="footer-sitio">El sitio</p>
+      <ul>
+        <li><a href="/comunidad/">Comunidad docente</a></li>
+        <li><a href="/quienes-somos/">Quiénes somos</a></li>
+        <li><a href="/cuentas-recomendadas/">Cuentas recomendadas</a></li>
+        <li><a href="/contacto/">Contacto</a></li>
+        <li><a href="/privacidad/">Política de privacidad</a></li>
+        <li><button type="button" data-analytics-settings hidden>Preferencias de medición</button></li>
+        <li><a href="/aviso-legal/">Aviso legal</a></li>
+        <li><a href="/aviso-legal/#fotos">Créditos de las fotos</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <nav class="footer-social" aria-label="Redes sociales">
+      <p>Redes sociales · Próximamente</p>
+      <ul>
+        {redes.map(({ id, nombre }) => <li><a href={`/contacto/#${id}`}>{nombre}</a></li>)}
+      </ul>
+    </nav>
+    <p>© {year} {site.name}. Puedes imprimir y usar estos recursos en tu aula. No se permite republicarlos en otros sitios.</p>
+  </div>
+</footer>
+
+<style>
+  /* Pie oscuro: cierra la página con contraste y deja respirar el contenido claro. */
+  .site-footer {
+    margin-top: var(--space-9);
+    background: var(--pizarra-900);
+    color: var(--on-ink);
+    padding-block: var(--space-8) var(--space-6);
+    font-size: var(--step--1);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .footer-grid {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+    max-width: 34rem;
+  }
+  .footer-brand :global(.logo) {
+    --logo-descriptor: var(--on-ink);
+    color: var(--on-ink);
+  }
+  .footer-brand :global(.logotipo) {
+    color: var(--on-ink);
+  }
+  @media (min-width: 60rem) {
+    .footer-grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+    .footer-brand {
+      grid-column: auto;
+    }
+  }
+  .footer-brand p {
+    margin-top: var(--space-3);
+    max-width: 40ch;
+    line-height: 1.6;
+  }
+  .footer-title {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pizarra-300);
+    margin-bottom: var(--space-3);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li a, li button:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    color: var(--on-ink);
+    text-decoration: none;
+  }
+  li button {
+    font: inherit;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  li a:hover, li button:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .site-footer :focus-visible {
+    outline-color: var(--pizarra-300);
+  }
+  .footer-bottom {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--pizarra-300);
+    color: var(--on-ink);
+  }
+  .footer-social {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  .footer-social ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+  }
+  .footer-social a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

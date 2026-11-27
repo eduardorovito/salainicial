@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/comunidad-cms.css';
+
+const configurada = Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+---
+<Base title="Confirma tu acceso" description="Confirma tu acceso a la Comunidad docente de Salainicial." noindex ads={false} analytics={false}>
+  <section class="container cms" aria-labelledby="titulo-confirmacion" data-confirmar={configurada ? '' : undefined}>
+    <h1 id="titulo-confirmacion">Confirma tu acceso</h1>
+    <p>Estás a un paso de entrar a tu panel docente de Salainicial.</p>
+    <p class="cms-status" role="status" data-confirmar-estado></p>
+    <div class="cms-row">
+      <button class="button" type="button" data-confirmar-boton hidden>Entrar a mi panel docente</button>
+      <a href="/comunidad/#participa">Solicitar un nuevo enlace</a>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const root = document.querySelector('[data-confirmar]');
+  const boton = root?.querySelector<HTMLButtonElement>('[data-confirmar-boton]');
+  const estado = root?.querySelector<HTMLElement>('[data-confirmar-estado]');
+  const token = new URLSearchParams(location.hash.slice(1)).get('token_hash');
+
+  if (token) history.replaceState(null, '', location.pathname + location.search);
+
+  if (boton && estado) {
+    if (!token) {
+      estado.textContent = 'Abre el enlace que te enviamos por correo o solicita uno nuevo.';
+    } else {
+      boton.hidden = false;
+      boton.addEventListener('click', async () => {
+        boton.disabled = true;
+        estado.textContent = 'Estamos confirmando tu acceso…';
+        try {
+          const supabase = createClient(
+            import.meta.env.PUBLIC_SUPABASE_URL,
+            import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+            { auth: { flowType: 'pkce', detectSessionInUrl: false } },
+          );
+          const { data, error } = await supabase.auth.verifyOtp({ token_hash: token, type: 'email' });
+          if (error || !data.session) {
+            if (error?.code === 'otp_expired' || error?.code === 'access_denied') {
+              estado.textContent = 'Este enlace ya venció o se usó. Solicita uno nuevo para entrar a tu panel.';
+              boton.hidden = true;
+              return;
+            }
+            throw error ?? new Error('No se creó la sesión.');
+          }
+          location.replace('/comunidad/panel/?acceso=confirmado');
+        } catch {
+          estado.textContent = 'No pudimos confirmar tu acceso. Intenta de nuevo o solicita un enlace nuevo.';
+          boton.disabled = false;
+        }
+      });
+    }
+  }
+</script>

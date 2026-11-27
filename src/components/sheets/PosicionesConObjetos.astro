@@ -1,0 +1,22 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const posiciones = ['Dentro de la caja', 'Al lado de la caja', 'Encima de la caja cerrada'];
+---
+
+<SheetFrame title="¿Dónde coloco la pelota?" label="Tres dibujos de una caja, con espacio para colocar una pelota dentro, al lado o encima de la caja cerrada.">
+  <g fill="#1f1a17" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" font-size="4.7">
+    <text x="15" y="52">Escucha la indicación. Coloca una ficha grande o dibuja la pelota.</text>
+    {posiciones.map((posicion, indice) => (
+      <g transform={`translate(0 ${64 + indice * 68})`}>
+        <rect x="15" y="0" width="180" height="62" rx="4" fill="none" stroke="#796f67" stroke-width=".55" />
+        <text x="22" y="12" font-size="5.4" font-weight="700">{posicion}</text>
+        <g transform="translate(68 24)" stroke="#1f1a17" fill="none" stroke-width=".85" stroke-linejoin="round">
+          <path d="M0 16h54v15H0z M54 16l17-16v15l-17 16 M0 16l17-16h54" />
+          {indice < 2 && <path d="M17 0v16 M0 16l-8-6 17-16 8 6 M54 16l8 7 17-16-8-7" />}
+        </g>
+      </g>
+    ))}
+    <text x="15" y="278" font-weight="700">Señala una posición y muéstrala con una caja de verdad.</text>
+  </g>
+</SheetFrame>

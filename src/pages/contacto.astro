@@ -1,0 +1,25 @@
+---
+import TextPage from '../components/TextPage.astro';
+import { site, redes } from '../site.config.mjs';
+---
+
+<TextPage title="Contacto" description={`Cómo comunicarte con ${site.name}.`}>
+  {site.email
+    ? <p>Escríbenos a <a href={`mailto:${site.email}`}><strong>{site.email}</strong></a>.</p>
+    : <p>Estamos configurando el correo de contacto de Salainicial.</p>}
+  <h2>Puedes escribirnos para</h2>
+  <ul>
+    <li>Contarnos cómo te fue con un recurso en tu aula.</li>
+    <li>Avisarnos de un error en una planificación, una fecha o una ficha.</li>
+    <li>Proponer un tema, una efeméride o un tipo de ficha que te haga falta.</li>
+    <li>Consultas sobre el uso de los recursos o sobre la privacidad del sitio.</li>
+  </ul>
+  <p>
+    Si nos envías fotos de producciones de los niños, por favor no incluyas caras ni nombres completos. Cuidar su
+    privacidad también es parte de nuestro trabajo.
+  </p>
+  <h2 id="redes">Redes sociales</h2>
+  <ul>
+    {redes.map(({ id, nombre }) => <li id={id}><strong>{nombre}</strong> · Próximamente</li>)}
+  </ul>
+</TextPage>

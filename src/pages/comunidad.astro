@@ -1,0 +1,167 @@
+---
+import Base from '../layouts/Base.astro';
+import Foto from '../components/Foto.astro';
+import { categorias, proveedores } from '../lib/comunidad';
+
+const configurada = Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+const activos = (import.meta.env.PUBLIC_COMMUNITY_PROVIDERS ?? '').split(',').map((valor: string) => valor.trim());
+const accesos = proveedores.filter((proveedor) => activos.includes(proveedor.id));
+const claveCaptcha = import.meta.env.PUBLIC_COMMUNITY_TURNSTILE_SITE_KEY;
+const porCorreo = import.meta.env.PUBLIC_COMMUNITY_EMAIL_LOGIN === 'true' && Boolean(claveCaptcha);
+const accesoDisponible = configurada && (accesos.length > 0 || porCorreo);
+---
+
+<Base title="Comunidad docente" description="Un espacio para compartir materiales, experiencias de aula y preguntas con docentes de educación inicial en español." noindex={!accesoDisponible} ads={false}>
+  <section class="container community-hero" aria-labelledby="community-title">
+    <div>
+      <h1 id="community-title">Comunidad docente</h1>
+      <p>Comparte ideas, recursos y experiencias de aula con docentes de educación inicial de América Latina, España y otras comunidades hispanohablantes.</p>
+      <nav class="community-links" aria-label="Espacios de la comunidad">
+        <a href="#foro">Foro docente</a>
+        {configurada && <a href="/comunidad/aportes/">Aportes docentes</a>}
+        <a href="#participa">{accesoDisponible ? 'Iniciar sesión o registrarse' : 'Estado del acceso'}</a>
+        {configurada && <a href="/comunidad/panel/">Mi panel docente</a>}
+      </nav>
+    </div>
+    <Foto id="comunidad-colaboracion" class="community-art" sizes="(min-width: 48rem) 27rem, 100vw" eager />
+  </section>
+
+  <section class="container community" id="foro" aria-labelledby="topics-title" data-community={configurada ? '' : undefined}>
+    {
+      configurada ? (
+        <div class="community-layout">
+          <div class="community-feed">
+            <div class="section-head">
+              <h2 id="topics-title">Foro docente</h2>
+              <label class="field">Sección
+                <select data-category>
+                  <option value="">Todas</option>
+                  {categorias.map(({ id, nombre }) => <option value={id}>{nombre}</option>)}
+                </select>
+              </label>
+            </div>
+            <p role="status" data-feed-status>Cargando conversaciones…</p>
+            <ul class="thread-list" data-threads></ul>
+            <button class="button button--quiet" type="button" data-more hidden>Ver más conversaciones</button>
+          </div>
+          <aside class="community-side" aria-label="Participar en la comunidad">
+            <div class="community-card" data-signin>
+              <h2 id="participa">Acceso a la comunidad</h2>
+              {
+                accesoDisponible ? (
+                  <>
+                    <p>Usa el mismo acceso para crear tu cuenta o iniciar sesión. Con una cuenta puedes abrir conversaciones, responder y compartir aportes.</p>
+                    <div class="providers">
+                      {accesos.map(({ id, nombre }) => <button class="button button--quiet" type="button" data-provider={id}>Continuar con {nombre}</button>)}
+                    </div>
+                    {porCorreo && (
+                      <form method="post" data-email-form>
+                        <label class="field">Correo electrónico
+                          <input type="email" name="email" autocomplete="email" required />
+                        </label>
+                        <div id="community-captcha" class="cf-turnstile" data-sitekey={claveCaptcha} data-size="flexible"></div>
+                        <button class="button button--quiet" type="submit">Enviarme un enlace de acceso</button>
+                      </form>
+                    )}
+                  </>
+                ) : <p>Por ahora puedes leer el foro. El registro y el inicio de sesión todavía no están habilitados.</p>
+              }
+            </div>
+            <div class="community-card" data-signed-in hidden>
+              <div class="section-head">
+                <h2>Nueva conversación</h2>
+                <button class="signout" type="button" data-signout>Cerrar sesión</button>
+              </div>
+              <form data-new-topic>
+                <label class="field">Nombre público
+                  <input name="display_name" minlength="2" maxlength="48" required autocomplete="nickname" />
+                </label>
+                <label class="field">Sección
+                  <select name="category" required>
+                    {categorias.map(({ id, nombre }) => <option value={id}>{nombre}</option>)}
+                  </select>
+                </label>
+                <label class="field">Título
+                  <input name="title" minlength="8" maxlength="120" required />
+                </label>
+                <label class="field">Mensaje
+                  <textarea name="body" rows="5" minlength="20" maxlength="3000" required></textarea>
+                </label>
+                <button class="button" type="submit">Publicar</button>
+              </form>
+            </div>
+            <p role="status" data-community-status></p>
+            <details class="community-rules">
+              <summary>Pautas de convivencia</summary>
+              <p>Este espacio es para docentes adultas y adultos. Tus publicaciones y tu nombre público pueden ser vistos por otras personas. Evita compartir datos, fotos o información que identifique a estudiantes o familias.</p>
+            </details>
+          </aside>
+        </div>
+      ) : (
+        <div class="community-card community-unavailable">
+          <h2 id="topics-title">Foro docente en preparación</h2>
+          <p>Este será el espacio para conversar con otros docentes y compartir experiencias de aula.</p>
+          <h3 id="participa">Acceso a la comunidad</h3>
+          <p>El registro y el inicio de sesión estarán disponibles cuando abra el foro.</p>
+        </div>
+      )
+    }
+  </section>
+
+  {configurada && <noscript><p class="container">Activa JavaScript para ver y participar en las conversaciones.</p></noscript>}
+  {configurada && porCorreo && (
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  )}
+</Base>
+
+<script>
+  import { iniciarComunidad } from '../lib/comunidad-client';
+
+  const root = document.querySelector<HTMLElement>('[data-community]');
+  if (root) iniciarComunidad(root);
+</script>
+
+<style is:global>
+  .community-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.55fr);
+    align-items: center;
+    gap: var(--space-6);
+    margin-block: var(--space-6) var(--space-7);
+    padding: clamp(1.35rem, 4vw, 3.25rem);
+    border-radius: var(--radius-lg);
+    background: var(--paper-2);
+  }
+  .community-hero p { max-width: 52ch; margin-top: var(--space-4); font-size: var(--step-1); color: var(--ink-2); }
+  .community-links { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-4); }
+  .community-links a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
+  .community-art { width: 100%; height: auto; aspect-ratio: 5 / 4; object-fit: cover; border-radius: var(--radius); }
+  .community-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(15rem, 1fr); gap: var(--space-6); align-items: start; }
+  .community :is(form, .providers, .community-side) { display: grid; gap: var(--space-4); }
+  .community [hidden] { display: none; }
+  .community-card, .community-thread, .community-rules { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-5); background: var(--white); }
+  .community-unavailable { display: grid; justify-items: start; gap: var(--space-4); max-width: 36rem; }
+  .community h2 { font-size: var(--step-2); }
+  .community .field { display: grid; gap: var(--space-1); font-weight: 700; }
+  .community :is(input, textarea, select) { min-height: 44px; min-width: 0; padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; }
+  .community :is(textarea, input) { width: 100%; }
+  .community textarea { resize: vertical; }
+  .community :is([data-signin], [data-signed-in]) :is(form, .providers, p) { margin-top: var(--space-4); }
+  .community [data-community-status]:empty { display: none; }
+  .community button:disabled { opacity: 0.65; cursor: wait; }
+  .community .thread-list, .community .reply-list { padding: 0; margin: 0; list-style: none; display: grid; gap: var(--space-4); }
+  .community .thread-list { margin-block: var(--space-4); }
+  .community-thread :is(.thread-meta,.reply-meta) { color: var(--ink-2); font-size: var(--step--1); margin-bottom: var(--space-2); }
+  .community-thread h3 { font-size: var(--step-1); }
+  .community-thread .thread-body, .community-thread .reply-body { white-space: pre-wrap; overflow-wrap: anywhere; margin-block: var(--space-2); }
+  .community-thread .thread-actions { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-3); margin-top: var(--space-2); }
+  .community-thread .reply-list > li { padding-block-start: var(--space-3); border-top: 1px solid var(--line); }
+  .community-thread :is(.thread-replies, form) { margin-top: var(--space-4); }
+  .community :is(.signout, .thread-action) { appearance: none; background: none; border: 0; color: currentColor; font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 0.17em; cursor: pointer; min-height: 44px; }
+  .community-rules summary { cursor: pointer; font-weight: 700; }
+  .community-rules p { margin-top: var(--space-3); }
+  @media (max-width: 48rem) {
+    .community-layout, .community-hero { grid-template-columns: minmax(0,1fr); }
+    .community-art { aspect-ratio: 16 / 9; }
+  }
+</style>

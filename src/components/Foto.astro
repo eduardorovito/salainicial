@@ -1,0 +1,29 @@
+---
+// Foto optimizada: Astro genera versiones WebP en varios anchos y el navegador elige la justa.
+import { Picture } from 'astro:assets';
+import { fotos, type FotoId } from '../data/fotos';
+
+interface Props {
+  id: FotoId;
+  sizes: string;
+  widths?: number[];
+  class?: string;
+  /** Solo para la foto principal visible al cargar (mejora el LCP). */
+  eager?: boolean;
+}
+
+const { id, sizes, widths = [480, 800, 1200, 1600], class: className, eager = false } = Astro.props;
+const foto = fotos[id];
+---
+
+<Picture
+  src={foto.src}
+  alt={foto.alt}
+  widths={widths.filter((w) => w <= foto.src.width)}
+  sizes={sizes}
+  formats={['webp']}
+  class={className}
+  loading={eager ? 'eager' : 'lazy'}
+  fetchpriority={eager ? 'high' : 'auto'}
+  decoding="async"
+/>

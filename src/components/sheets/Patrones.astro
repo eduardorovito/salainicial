@@ -1,0 +1,69 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+// Cinco series (AB, AAB, grande-chico, ABC, ABB) con casilleros vacíos para continuarlas.
+const ink = '#1f1a17';
+const body = "'Atkinson Hyperlegible Next', Arial, sans-serif";
+
+type Forma = 'circ' | 'cuad' | 'tri' | 'estr' | 'grande' | 'chico' | null;
+
+const dibujar = (f: Forma, cx: number, cy: number): string => {
+  switch (f) {
+    case 'circ':
+      return `<circle cx="${cx}" cy="${cy}" r="6.5" />`;
+    case 'grande':
+      return `<circle cx="${cx}" cy="${cy}" r="8.5" />`;
+    case 'chico':
+      return `<circle cx="${cx}" cy="${cy}" r="3.8" />`;
+    case 'cuad':
+      return `<rect x="${cx - 6.5}" y="${cy - 6.5}" width="13" height="13" rx="0.8" />`;
+    case 'tri':
+      return `<path d="M${cx},${cy - 7.5} L${cx + 8},${cy + 6.5} L${cx - 8},${cy + 6.5} Z" />`;
+    case 'estr': {
+      const p: string[] = [];
+      for (let i = 0; i < 10; i++) {
+        const r = i % 2 === 0 ? 8.5 : 3.8;
+        const a = -Math.PI / 2 + (i * Math.PI) / 5;
+        p.push(`${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`);
+      }
+      return `<path d="M${p.join(' L')} Z" />`;
+    }
+    default:
+      return `<rect x="${cx - 8.5}" y="${cy - 8.5}" width="17" height="17" rx="2.5" stroke-dasharray="1.6 1.4" stroke="#8f857e" />`;
+  }
+};
+
+const series: Forma[][] = [
+  ['circ', 'cuad', 'circ', 'cuad', 'circ', 'cuad', null, null],
+  ['tri', 'tri', 'circ', 'tri', 'tri', 'circ', null, null],
+  ['grande', 'chico', 'grande', 'chico', 'grande', 'chico', null, null],
+  ['estr', 'circ', 'cuad', 'estr', 'circ', null, null, null],
+  ['cuad', 'tri', 'tri', 'cuad', 'tri', 'tri', null, null],
+];
+
+const top = 56;
+const h = 40;
+const gap = 4;
+const filas = series.map((s, i) => {
+  const y = top + i * (h + gap);
+  const cy = y + h / 2;
+  return { y, svg: s.map((f, k) => dibujar(f, 28 + 22 * k, cy)).join('') };
+});
+---
+
+<SheetFrame title="Completa la serie" label="Ficha de patrones con cinco series de figuras (círculos, cuadrados, triángulos y estrellas) y casilleros punteados para dibujar lo que sigue">
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family={body}>
+    ¿Qué viene después? Dibuja las figuras que faltan en los cuadrados punteados.
+  </text>
+  {
+    filas.map((f) => (
+      <g>
+        <rect x="15" y={f.y} width="180" height={h} rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+        <g fill="none" stroke={ink} stroke-width="0.75" stroke-linejoin="round" set:html={f.svg} />
+      </g>
+    ))
+  }
+  <text x="15" y="282" font-size="4.6" font-weight="700" fill={ink} font-family={body}>
+    Desafío: inventa tu propia serie en el dorso y pide a un compañero que la siga.
+  </text>
+</SheetFrame>

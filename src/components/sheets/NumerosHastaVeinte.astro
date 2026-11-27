@@ -1,0 +1,30 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const tarjetas = Array.from({ length: 10 }, (_, i) => ({
+  numero: i + 11,
+  x: 15 + (i % 2) * 93,
+  y: 59 + Math.floor(i / 2) * 43,
+}));
+const celdas = Array.from({ length: 20 }, (_, i) => ({
+  x: 5 + Math.floor(i / 10) * 39 + (i % 5) * 6.8,
+  y: 18 + Math.floor((i % 10) / 5) * 7,
+  marcada: i < 10,
+}));
+---
+
+<SheetFrame title="Números del 11 al 20" label="Diez tarjetas numeradas del 11 al 20 con un marco de diez lleno y un segundo marco vacío para completar">
+  <text x="15" y="50" font-size="4.4" fill="#1f1a17">El primer marco tiene diez. Marca en el segundo las que faltan.</text>
+  {tarjetas.map(({ numero, x, y }) => (
+    <g transform={`translate(${x} ${y})`}>
+      <rect width="87" height="38" rx="3" stroke="#69605b" stroke-width="0.4" fill="none" />
+      <text x="5" y="12" font-size="8" font-weight="700" fill="#1f1a17">{numero}</text>
+      {celdas.map(({ x, y, marcada }) => (
+        <g>
+          <rect x={x} y={y} width="6.8" height="7" fill="none" stroke="#524b47" stroke-width="0.35" />
+          {marcada && <circle cx={x + 3.4} cy={y + 3.5} r="1.9" fill="#292421" />}
+        </g>
+      ))}
+    </g>
+  ))}
+</SheetFrame>

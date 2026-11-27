@@ -1,0 +1,579 @@
+---
+import Base from '../layouts/Base.astro';
+import AdSlot from '../components/AdSlot.astro';
+import ResourceRow from '../components/ResourceRow.astro';
+import Foto from '../components/Foto.astro';
+import { sheets } from '../components/sheets';
+import { fotoDeRecurso, fotosSinRepetir, type FotoId } from '../data/fotos';
+import { site, categories } from '../site.config.mjs';
+import { getRecursos, urlDe, urlEdad } from '../lib/recursos';
+import { proximaEfemeride, MESES } from '../data/efemerides.mjs';
+
+const recursos = await getRecursos();
+const todasLasFichas = recursos.filter((r) => r.data.category === 'fichas' && r.data.sheet);
+// Las series (como el abecedario) no llenan la portada: se muestran las fichas sueltas más nuevas.
+const fichas = todasLasFichas.filter((r) => !r.data.serie).slice(0, 8);
+const destacados = [
+  { id: 'planificacion-cierre-de-ciclo-nivel-inicial', accion: 'Cierra el ciclo' },
+  { id: 'mercado-de-las-cantidades', accion: 'Juega a contar' },
+  { id: 'cuento-la-biblioteca-del-patio', accion: 'Lee en voz alta' },
+  { id: 'guia-pensamiento-logico-preescolar', accion: 'Elige por habilidad' },
+  { id: 'guia-lenguaje-oral-preescolar', accion: 'Juega con las palabras' },
+  { id: 'herve-tullet', accion: 'Crea un mural colectivo' },
+].flatMap(({ id, accion }) => {
+  const recurso = recursos.find((r) => r.id === id);
+  return recurso ? [{ recurso, accion }] : [];
+});
+const idsDestacados = new Set(destacados.map(({ recurso }) => recurso.id));
+const ultimos = recursos.filter((r) => r.data.category !== 'fichas' && !idsDestacados.has(r.id)).slice(0, 6);
+const prox = proximaEfemeride();
+const fotosDeTarjeta: Partial<Record<string, FotoId>> = {
+  actividades: 'semillas',
+  cuentos: 'lectura-compartida',
+};
+const tarjetasDeSeccion = [
+  ...categories.map((categoria) => ({
+    ...categoria,
+    href: `/${categoria.id}/`,
+    foto: fotosDeTarjeta[categoria.id] ?? fotoDeRecurso(categoria.id),
+  })),
+  {
+    id: 'proyectos',
+    name: 'Proyectos docentes',
+    short: 'Proyectos de aula compartidos en la comunidad',
+    href: '/comunidad/aportes/?tipo=proyecto',
+    foto: 'proyectos-materiales' as const,
+  },
+];
+const fotoPrincipal = 'portada-bloques';
+const filasUltimas = fotosSinRepetir(ultimos, [fotoPrincipal, ...tarjetasDeSeccion.map((tarjeta) => tarjeta.foto)]);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.name,
+  url: site.url,
+  inLanguage: site.locale,
+  description: site.description,
+};
+---
+
+<Base jsonLd={jsonLd} ogImage="/og/inicio.jpg">
+  <section class="hero container" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <h1 id="hero-title">Recursos para docentes de <span class="accent">educación inicial</span></h1>
+      <p class="hero-lead">Fichas, juegos y planificaciones gratis para docentes con niños de 3 a 5 años.</p>
+      <a class="button hero-action" href="/fichas/">Ver fichas para imprimir</a>
+    </div>
+
+  <nav class="ages" aria-labelledby="ages-title">
+    <p id="ages-title">Busca por edad</p>
+    <ul>
+      {['3', '4', '5'].map((edad) => <li><a href={urlEdad(edad)}>{edad} años</a></li>)}
+    </ul>
+  </nav>
+
+    <div class="hero-media">
+      <Foto id={fotoPrincipal} class="hero-photo" sizes="(min-width: 78rem) 43rem, (min-width: 60rem) 56vw, calc(100vw - 2rem)" widths={[480, 800, 1200, 1600, 1800]} eager />
+    </div>
+  </section>
+
+
+
+  <section class="section container" aria-labelledby="fichas-title">
+    <div class="section-head">
+      <div>
+        <h2 id="fichas-title">Fichas para imprimir</h2>
+        <p>Hojas A4 con ideas para presentarlas al grupo. Se imprimen o se guardan en PDF.</p>
+      </div>
+      <a class="link-arrow" href="/fichas/">Ver todas las fichas <span aria-hidden="true">→</span></a>
+    </div>
+    <ul class="sheet-grid">
+      {
+        fichas.map((f) => {
+          const Sheet = sheets[f.data.sheet!];
+          return (
+            <li>
+              <a class="sheet-card" href={urlDe(f)}>
+                <span class="sheet-thumb" aria-hidden="true">
+                  <Sheet letra={f.data.letra} />
+                </span>
+                <span class="sheet-name">{f.data.title}</span>
+                <span class="sheet-meta">
+                  {f.data.edades.map((e) => (
+                    <span class="chip">{e} años</span>
+                  ))}
+                </span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  {destacados.length > 0 && (
+    <section class="section container" aria-labelledby="ideas-title">
+      <div class="section-head">
+        <h2 id="ideas-title">Ideas para tu próxima clase</h2>
+      </div>
+      <ul class="ideas-grid">
+        {destacados.map(({ recurso, accion }) => (
+          <li>
+            <a class="idea-card" href={urlDe(recurso)} data-cat={recurso.data.category}>
+              <span class="section-label">{accion}</span>
+              <h3>{recurso.data.title}</h3>
+              <span class="idea-detail">{recurso.data.duration} <span aria-hidden="true">→</span></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <AdSlot placement="home" class="container" />
+
+  <section class="section container" aria-labelledby="cats-title">
+    <div class="section-head">
+      <div>
+        <h2 id="cats-title">Explora por sección</h2>
+        <p>Todo ordenado como lo usas en el aula: de la ficha del día al proyecto del mes.</p>
+      </div>
+    </div>
+    <ul class="bento">
+      {
+        tarjetasDeSeccion.map((c, i) => (
+          <li class:list={['bento-item', { 'bento-item--big': i === 0, 'bento-item--wide': c.id === 'proyectos' }]}>
+            <a class="bento-card" href={c.href} data-cat={c.id}>
+              <span class="bento-photo">
+                <Foto
+                  id={c.foto}
+                  sizes={c.id === 'proyectos' ? '(min-width: 60rem) 28rem, 38vw' : i === 0 ? '(min-width: 60rem) 30rem, 100vw' : '(min-width: 60rem) 18rem, 50vw'}
+                  widths={[400, 700, 1000, 1400]}
+                />
+              </span>
+              <span class="bento-body">
+                <h3 class="bento-name">{c.name}</h3>
+                <span class="bento-short">{c.short}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="section container latest" aria-labelledby="new-title">
+    <div class="latest-main">
+      <div class="section-head">
+        <h2 id="new-title">Últimos recursos</h2>
+      </div>
+      <ul class="resource-list">
+        {filasUltimas.map(({ recurso, foto }) => <li><ResourceRow recurso={recurso} foto={foto} /></li>)}
+      </ul>
+    </div>
+    <aside class="latest-side" aria-label="Próxima fecha especial">
+      <a class="next-date" href={prox.link} data-cat="efemerides" data-next-date>
+        <span class="cal" aria-hidden="true">
+          <span class="cal-m" data-month>{MESES[prox.m - 1].slice(0, 3)}</span>
+          <span class="cal-d" data-daynum>{prox.d}</span>
+        </span>
+        <span class="next-text">
+          <span class="next-label">Próxima fecha especial</span>
+          <span class="next-name" data-name>{prox.name}</span>
+          <span class="next-day" data-day>{prox.d} de {MESES[prox.m - 1]}</span>
+        </span>
+        <span class="next-cta">Ver ideas para el aula <span aria-hidden="true">→</span></span>
+      </a>
+    </aside>
+  </section>
+</Base>
+
+<script>
+  import { proximaEfemeride, MESES } from '../data/efemerides.mjs';
+  // Recalcula la próxima fecha en el navegador, así no queda desactualizada entre publicaciones.
+  const box = document.querySelector<HTMLAnchorElement>('[data-next-date]');
+  if (box) {
+    const e = proximaEfemeride(new Date());
+    box.querySelector('[data-month]')!.textContent = MESES[e.m - 1].slice(0, 3);
+    box.querySelector('[data-daynum]')!.textContent = String(e.d);
+    box.querySelector('[data-name]')!.textContent = e.name;
+    box.querySelector('[data-day]')!.textContent = `${e.d} de ${MESES[e.m - 1]}`;
+    box.href = e.link;
+  }
+</script>
+
+<style>
+  /* Portada */
+  .hero {
+    display: grid;
+    gap: var(--space-6);
+    padding-top: var(--space-7);
+  }
+  @media (min-width: 60rem) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+      align-items: center;
+      gap: var(--space-7);
+    }
+  }
+  .hero h1 {
+    font-size: clamp(2.25rem, 1.5rem + 2.75vw, 3.5rem);
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  .accent {
+    color: var(--accent-ink);
+  }
+  .hero-lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 36ch;
+  }
+  .hero-action {
+    margin-top: var(--space-5);
+  }
+  .hero-media :global(.hero-photo) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+
+  .ages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-4);
+    margin-top: var(--space-5);
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    font-weight: 700;
+  }
+  .ages ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ages a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-underline-offset: 0.2em;
+  }
+
+  /* Put the age shortcuts before the photograph on phones. */
+  .hero > .ages { margin-top: 0; }
+  .hero > .ages a { min-width: 44px; justify-content: center; }
+  @media (min-width: 60rem) {
+    .hero > .ages { grid-row: 2; grid-column: 1 / -1; }
+    .hero-media { grid-column: 2; grid-row: 1; }
+  }
+  @media (width < 48rem) {
+    .hero { padding-top: var(--space-5); gap: var(--space-4); }
+    .hero-action { margin-top: var(--space-4); }
+    .hero > .ages { gap: 0 0.75rem; }
+    .hero > .ages ul { gap: 0 0.75rem; }
+  }
+
+  /* Fichas: tarjetas con la hoja real */
+  .sheet-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+    gap: var(--space-5) var(--space-4);
+  }
+  @media (min-width: 48rem) {
+    .sheet-grid {
+      grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+      gap: var(--space-6) var(--space-5);
+    }
+  }
+  .sheet-card {
+    display: grid;
+    gap: var(--space-3);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .sheet-thumb {
+    display: block;
+    padding: clamp(0.75rem, 2.5vw, 1.25rem);
+    border-radius: var(--radius);
+    background: var(--paper-2);
+    transition: background-color 200ms var(--ease-out);
+  }
+  .sheet-thumb :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform 220ms var(--ease-out),
+      box-shadow 220ms var(--ease-out);
+  }
+  .ideas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+  .idea-card {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    height: 100%;
+    padding: var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--white);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .idea-card:hover h3 { text-decoration: underline; }
+  .idea-card h3 { font-size: var(--step-1); line-height: 1.3; }
+  .idea-detail { font-size: var(--step--1); color: var(--ink-2); }
+  .idea-detail span { margin-inline-start: var(--space-1); }
+  .sheet-card:hover .sheet-thumb {
+    background: var(--sol-500);
+  }
+  .sheet-card:hover .sheet-thumb :global(svg) {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .sheet-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1rem, 0.92rem + 0.4vw, 1.2rem);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .sheet-card:hover .sheet-name {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
+  .sheet-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  /* Secciones en grilla bento */
+  .bento {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .bento-item--big {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 60rem) {
+    .bento {
+      grid-template-columns: 1.25fr 1fr 1fr;
+      gap: var(--space-4);
+    }
+    .bento-item--big {
+      grid-column: 1;
+      grid-row: 1 / span 3;
+    }
+  }
+  .bento-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--cat);
+    color: var(--on-cat);
+    text-decoration: none;
+    transition:
+      transform 200ms var(--ease-out),
+      box-shadow 200ms var(--ease-out);
+  }
+  .bento-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+  .bento-photo {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+  }
+  .bento-item--big .bento-photo {
+    aspect-ratio: 16 / 9;
+  }
+  @media (min-width: 60rem) {
+    .bento-item--big .bento-photo {
+      aspect-ratio: auto;
+      flex: 1;
+      min-height: 15rem;
+    }
+  }
+  .bento-photo :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms var(--ease-out);
+  }
+  .bento-card:hover .bento-photo :global(img) {
+    transform: scale(1.04);
+  }
+  .bento-item--wide {
+    grid-column: 1 / -1;
+  }
+  .bento-item--wide .bento-card {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .bento-item--wide .bento-photo {
+    flex: 0 0 38%;
+    aspect-ratio: 2 / 1;
+  }
+  .bento-item--wide .bento-body {
+    align-content: center;
+  }
+  .bento-body {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4) var(--space-4) var(--space-5);
+    justify-items: start;
+  }
+  @media (min-width: 48rem) {
+    .bento-body {
+      padding: var(--space-5);
+    }
+  }
+  .bento-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
+    line-height: 1.25;
+  }
+  .bento-item--big .bento-name {
+    font-size: var(--step-2);
+  }
+  .bento-short {
+    font-size: var(--step--1);
+  }
+  @media (max-width: 40rem) {
+    .bento-item:not(.bento-item--big) .bento-short {
+      display: none;
+    }
+  }
+
+  /* Últimos recursos + próxima fecha */
+  .latest {
+    display: grid;
+    gap: var(--space-7);
+  }
+  .latest .section-head {
+    margin-bottom: var(--space-4);
+  }
+  @media (min-width: 60rem) {
+    .latest {
+      grid-template-columns: 1fr 20rem;
+      align-items: start;
+      gap: var(--space-8);
+    }
+    .latest-side {
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-5));
+    }
+  }
+  .next-date {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    text-decoration: none;
+    transition: transform 200ms var(--ease-out);
+  }
+  .next-date:hover {
+    transform: translateY(-3px);
+  }
+  .cal {
+    display: grid;
+    inline-size: 4.5rem;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--paper);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .cal-m {
+    background: var(--cat);
+    color: var(--on-cat);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-block: 0.3rem;
+  }
+  .cal-d {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 2.1rem;
+    line-height: 1.3;
+  }
+  .next-text {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .next-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+  .next-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--step-1);
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .next-day {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .next-cta {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    align-items: center;
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: var(--step--1);
+    font-weight: 700;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bento-card:hover .bento-photo :global(img),
+    .sheet-card:hover .sheet-thumb :global(svg) {
+      transform: none;
+    }
+  }
+</style>

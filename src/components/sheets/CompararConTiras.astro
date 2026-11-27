@@ -1,0 +1,33 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const tiras = [
+  { marca: 'Tira A', y: 108 },
+  { marca: 'Tira B', y: 160 },
+];
+---
+
+<SheetFrame title="Dos tiras, un mismo inicio" label="Guía A4 para colocar dos tiras de papel en una línea de inicio y comparar las marcas de sus extremos.">
+  <g fill="#1f1a17" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" font-size="4.7">
+    <text x="15" y="52">Coloca las tiras en la línea de inicio y mira dónde quedaron las marcas.</text>
+    <text x="15" y="60">Una tira representa el largo de un objeto.</text>
+    <text x="59" y="81" text-anchor="middle" font-weight="700">Inicio</text>
+    <path d="M59 87v111" stroke="#1f1a17" stroke-width="1.15" />
+    {tiras.map(({ marca, y }) => (
+      <g transform={`translate(0 ${y})`}>
+        <text x="22" y="3" font-size="5.4" font-weight="700">{marca}</text>
+        <rect x="59" y="-13" width="132" height="28" rx="2" fill="none" stroke="#796f67" stroke-width=".55" stroke-dasharray="2 2" />
+      </g>
+    ))}
+    <text x="15" y="215" font-weight="700">¿Qué marca quedó más lejos del inicio?</text>
+    <g fill="none" stroke="#1f1a17" stroke-width=".7">
+      <circle cx="23" cy="231" r="4" />
+      <circle cx="75" cy="231" r="4" />
+      <circle cx="127" cy="231" r="4" />
+    </g>
+    <text x="33" y="233">La de A</text>
+    <text x="85" y="233">La de B</text>
+    <text x="137" y="233">Quedaron juntas</text>
+    <text x="15" y="267" font-weight="700">Muestra cómo lo comprobaste.</text>
+  </g>
+</SheetFrame>

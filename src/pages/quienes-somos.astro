@@ -1,0 +1,39 @@
+---
+import TextPage from '../components/TextPage.astro';
+import { site } from '../site.config.mjs';
+---
+
+<TextPage title="Quiénes somos" description={`Qué es ${site.name}, quién lo hace y cómo armamos los recursos.`}>
+  <p>
+    {site.name} nació hace unos años como un espacio de recursos para docentes de nivel inicial. Hoy vuelve con una versión
+    nueva y la misma idea: que encuentres algo útil para tu aula en pocos minutos, listo para usar o para adaptar.
+  </p>
+
+  <h2>Qué vas a encontrar</h2>
+  <ul>
+    <li><a href="/planificaciones/">Planificaciones</a> completas, con propósitos, contenidos, actividades y evaluación.</li>
+    <li><a href="/efemerides/">Efemérides</a> del calendario escolar con ideas para cada grupo.</li>
+    <li><a href="/juegos/">Juegos</a> de patio, de mesa y de movimiento, con variantes por edad.</li>
+    <li><a href="/fichas/">Fichas para imprimir</a> en A4 o guardar en PDF.</li>
+    <li><a href="/blog/">Notas para docentes</a> sobre la organización del aula, el período de adaptación y las familias.</li>
+  </ul>
+
+  <h2>Cómo armamos los recursos</h2>
+  <p>
+    Cada recurso parte de una situación real de aula: qué edad tiene el grupo, cuánto tiempo hay, qué materiales tiene un
+    jardín común. Usamos herramientas digitales, incluida la inteligencia artificial, para ordenar ideas y diseñar las
+    fichas. Todo lo revisa una persona antes de publicarse, y lo actualizamos cuando nos llegan sugerencias.
+  </p>
+
+  <h2>Quién lo hace</h2>
+  <p>
+    {site.name} lo hace Eduardo Rovito, diseñador web y responsable del estudio
+    <a href="https://holadisenoweb.com.ar/">Hola Diseño Web</a>.
+  </p>
+
+  <h2>Escríbenos</h2>
+  <p>
+    Si usaste un recurso y quieres contarnos cómo te fue, si encontraste un error o si quieres proponer un tema,
+    consulta nuestra <a href="/contacto/">página de contacto</a>.
+  </p>
+</TextPage>

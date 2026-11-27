@@ -1,0 +1,22 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const tarjetas = [
+  ['circulo', 12], ['cuadrado', 7], ['triangulo', 12], ['circulo', 7],
+  ['triangulo', 7], ['circulo', 12], ['cuadrado', 12], ['triangulo', 7],
+  ['cuadrado', 12], ['triangulo', 12], ['circulo', 7], ['cuadrado', 7],
+] as const;
+---
+
+<SheetFrame title="Clasifica formas y tamaños" label="Doce tarjetas recortables con círculos, cuadrados y triángulos. Cada forma viene en dos tamaños y se repite">
+  <text x="15" y="50" font-size="4.4" fill="#1f1a17">Recorta y agrupa. Luego prueba una manera distinta de ordenar.</text>
+  {tarjetas.map(([figura, radio], i) => (
+    <g transform={`translate(${15 + (i % 4) * 46} ${59 + Math.floor(i / 4) * 67})`} fill="none" stroke="#292421">
+      <rect width="42" height="60" rx="2" stroke-width="0.45" stroke-dasharray="1.5 1.4" />
+      {figura === 'circulo' && <circle cx="21" cy="30" r={radio} stroke-width="0.9" />}
+      {figura === 'cuadrado' && <rect x={21 - radio} y={30 - radio} width={2 * radio} height={2 * radio} stroke-width="0.9" />}
+      {figura === 'triangulo' && <path d={`M21 ${30 - radio}L${21 + radio} ${30 + radio}H${21 - radio}Z`} stroke-width="0.9" />}
+    </g>
+  ))}
+  <text x="15" y="276" font-size="4.3" fill="#1f1a17">Explica qué tienen en común las tarjetas de tu grupo.</text>
+</SheetFrame>

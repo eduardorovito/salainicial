@@ -1,0 +1,63 @@
+---
+import { site } from '../site.config.mjs';
+// Logo: el isotipo tiene el triángulo arriba y, abajo, el círculo a la izquierda y el cuadrado a la derecha.
+---
+
+<a class="logo" href="/" aria-label={`${site.brand}, inicio`}>
+  <svg class="isotipo" viewBox="0 0 120 120" aria-hidden="true">
+    <polygon class="isotipo-cielo" points="60,6 86,52 34,52" stroke-width="8" stroke-linejoin="round"></polygon>
+    <circle class="isotipo-mandarina" cx="30" cy="90" r="26"></circle>
+    <rect class="isotipo-sol" x="64" y="64" width="52" height="52" rx="12"></rect>
+    <text class="isotipo-letra isotipo-letra--cielo" x="60" y="46" font-size="30">A</text>
+    <text class="isotipo-letra isotipo-letra--mandarina" x="30" y="103" font-size="40">3</text>
+    <text class="isotipo-letra isotipo-letra--sol" x="90" y="103" font-size="40">5</text>
+  </svg>
+  <span class="logo-copy">
+    <span class="logotipo" aria-hidden="true">{site.brand}</span>
+  </span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ink);
+    text-decoration: none;
+    min-height: 44px;
+  }
+  .isotipo {
+    width: 2.375rem;
+    height: 2.375rem;
+    flex-shrink: 0;
+  }
+  .isotipo-cielo { fill: var(--cielo-500); stroke: var(--cielo-500); }
+  .isotipo-mandarina { fill: var(--mandarina-500); }
+  .isotipo-sol { fill: var(--sol-500); }
+  .isotipo-letra {
+    font-family: var(--font-display);
+    font-weight: 600;
+    fill: var(--paper);
+    stroke: color-mix(in srgb, var(--isotipo-letra-color) 70%, white);
+    stroke-width: 5;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+    text-anchor: middle;
+  }
+  .isotipo-letra--cielo { --isotipo-letra-color: var(--cielo-500); }
+  .isotipo-letra--mandarina { --isotipo-letra-color: var(--mandarina-500); }
+  .isotipo-letra--sol { --isotipo-letra-color: var(--sol-500); }
+  .logo-copy {
+    display: grid;
+    gap: 0.1875rem;
+    min-width: 0;
+  }
+  .logotipo {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.45rem;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+</style>

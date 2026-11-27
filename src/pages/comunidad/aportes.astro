@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import { paises, tiposAporte } from '../../lib/comunidad';
+import '../../styles/comunidad-cms.css';
+const configurada = Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+---
+<Base title="Aportes docentes" description="Proyectos, recursos y recomendaciones compartidos por la comunidad docente." noindex ads={false}>
+  <div class="container cms" data-catalog={configurada ? '' : undefined}>
+    <nav class="breadcrumb" aria-label="Ruta"><a href="/comunidad/">Comunidad</a> <span aria-hidden="true">/</span> Aportes</nav>
+    <h1>Aportes docentes</h1>
+    <p>Encuentra proyectos, recursos y recomendaciones para el aula.</p>
+    <a href="/comunidad/panel/">Mi panel docente</a>
+    <div class="cms-row">
+      <label class="cms-field">País
+        <select data-country><option value="">Todos los países</option>{paises.map(({ id, nombre }) => <option value={id}>{nombre}</option>)}</select>
+      </label>
+      <label class="cms-field">Tipo de aporte
+        <select data-kind><option value="">Todos los tipos</option>{tiposAporte.map(({ id, nombre }) => <option value={id}>{nombre}</option>)}</select>
+      </label>
+    </div>
+    <p role="status" data-status>{configurada ? 'Cargando aportes…' : 'La biblioteca de aportes todavía no está disponible.'}</p>
+    <div class="cms-stack" data-results></div>
+    <div><button class="button button--quiet" type="button" data-more hidden>Ver más aportes</button></div>
+  </div>
+</Base>
+<script>
+  import { iniciarCatalogo } from '../../lib/comunidad-cms';
+  const root = document.querySelector<HTMLElement>('[data-catalog]');
+  if (root) iniciarCatalogo(root);
+</script>

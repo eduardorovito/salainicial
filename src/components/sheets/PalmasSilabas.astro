@@ -1,0 +1,18 @@
+---
+import SheetFrame from './SheetFrame.astro';
+import DibujoPalabra from './DibujoPalabra.astro';
+
+const palabras = ['sol', 'pato', 'luna', 'mesa', 'pera', 'pelota'] as const;
+---
+
+<SheetFrame title="Palmas por sílabas" label="Seis dibujos de palabras con una, dos o tres sílabas. Marca un círculo por cada golpe de voz">
+  <text x="15" y="50" font-size="4.4" fill="#1f1a17">Di el nombre. Marca un círculo por cada palma.</text>
+  {palabras.map((palabra, i) => (
+    <g transform={`translate(${15 + (i % 2) * 93} ${59 + Math.floor(i / 2) * 72})`}>
+      <rect width="87" height="64" rx="3" fill="none" stroke="#9e9691" stroke-width="0.5" />
+      <DibujoPalabra palabra={palabra} x={30} y={6} />
+      <text x="44" y="41" text-anchor="middle" font-size="4.4" fill="#292421">{palabra}</text>
+      {[21, 36, 51, 66].map((cx) => <circle {cx} cy="53" r="3.7" fill="none" stroke="#292421" stroke-width="0.6" />)}
+    </g>
+  ))}
+</SheetFrame>

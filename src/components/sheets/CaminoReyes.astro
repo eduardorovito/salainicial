@@ -1,0 +1,33 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const huellas = [
+  { x: 47, y: 99, giro: -19 },
+  { x: 82, y: 121, giro: -38 },
+  { x: 121, y: 140, giro: -27 },
+  { x: 157, y: 169, giro: 3 },
+];
+---
+
+<SheetFrame title="Un camino para la ronda" label="Recorrido de cuatro huellas grandes desde la entrada hasta una ronda, con espacio para dibujar un camino propio">
+  <g font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" fill="#1f1a17">
+    <text x="15" y="53" font-size="4.6">Sigue las huellas con un dedo hasta llegar a la ronda.</text>
+    <text x="20" y="92" font-size="4.6" font-weight="700">Inicio</text>
+    <text x="148" y="217" font-size="4.6" font-weight="700">La ronda</text>
+    <text x="15" y="237" font-size="5" font-weight="700">Si quieres, dibuja una huella nueva.</text>
+  </g>
+  <g fill="none" stroke="#1f1a17" stroke-width="0.9" stroke-linejoin="round">
+    {huellas.map(({ x, y, giro }) => (
+      <g transform={`translate(${x} ${y}) rotate(${giro})`}>
+        <path d="M-4-8C-8-4-5 1-4 5L-3 10Q0 14 4 10L5 5C5 0 8-5 4-8Q0-11-4-8Z" />
+        <path d="M-4 4Q0 6 5 4" />
+      </g>
+    ))}
+    <ellipse cx="157" cy="199" rx="20" ry="12" stroke="#81756b" stroke-dasharray="2 2" />
+    <circle cx="143" cy="192" r="4" />
+    <circle cx="171" cy="192" r="4" />
+    <circle cx="148" cy="207" r="4" />
+    <circle cx="166" cy="207" r="4" />
+    <rect x="15" y="243" width="180" height="34" rx="4" stroke="#81756b" stroke-width="0.55" />
+  </g>
+</SheetFrame>

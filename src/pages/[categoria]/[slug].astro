@@ -1,0 +1,322 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import ResourceRow from '../../components/ResourceRow.astro';
+import { sheets } from '../../components/sheets';
+import CatIcon from '../../components/CatIcon.astro';
+import Foto from '../../components/Foto.astro';
+import { fotos, fotoDeRecurso, fotosSinRepetir } from '../../data/fotos';
+import { site } from '../../site.config.mjs';
+import { getRecursos, categoriaDe, formatoFecha, fechaDe, urlDe, edadesTexto, type Recurso } from '../../lib/recursos';
+
+export async function getStaticPaths() {
+  const recursos = await getRecursos();
+  return recursos.map((recurso) => ({
+    params: { categoria: recurso.data.category, slug: recurso.id },
+    props: { recurso, todos: recursos },
+  }));
+}
+
+interface Props {
+  recurso: Recurso;
+  todos: Recurso[];
+}
+const { recurso, todos } = Astro.props;
+const { title, description, edades, duration, category, sheet, published, updated, image, letra, downloadPdf } = recurso.data;
+const cat = categoriaDe(category);
+const { Content } = await render(recurso);
+const Sheet = sheet ? sheets[sheet] : null;
+const downloadUrl = Sheet && downloadPdf ? `/descargas/${recurso.id}.pdf` : null;
+const foto = Sheet ? null : fotoDeRecurso(category, image);
+
+const relacionados = todos
+  .filter((r) => r.id !== recurso.id)
+  .sort((a, b) => Number(b.data.category === category) - Number(a.data.category === category) || Number(b.data.category === 'fichas') - Number(a.data.category === 'fichas'))
+  .slice(0, 3);
+const filasRelacionadas = fotosSinRepetir(relacionados, foto ? [foto] : []);
+
+const url = new URL(urlDe(recurso), site.url).href;
+const dateModified = fechaDe(recurso);
+const learningResourceType = sheet ? 'Ficha imprimible' : category === 'artistas' ? 'Proyecto de arte' : undefined;
+const ruta = [
+  { name: 'Inicio', item: new URL('/', site.url).href },
+  { name: cat.name, item: new URL(`/${cat.id}/`, site.url).href },
+  { name: title, item: url },
+];
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': learningResourceType ? ['Article', 'LearningResource'] : 'Article',
+      '@id': `${url}#articulo`,
+      headline: title,
+      description,
+      inLanguage: site.locale,
+      datePublished: published.toISOString(),
+      dateModified: dateModified.toISOString(),
+      author: { '@type': 'Organization', name: site.author, url: new URL('/quienes-somos/', site.url).href },
+      publisher: { '@type': 'Organization', name: site.name, url: site.url },
+      mainEntityOfPage: url,
+      image: new URL(`/og/${category}/${recurso.id}.jpg`, site.url).href,
+      educationalLevel: 'Educación inicial',
+      isAccessibleForFree: true,
+      ...(edades.length > 0 && { typicalAgeRange: edades.length === 1 ? edades[0] : `${edades[0]}-${edades.at(-1)}` }),
+      ...(learningResourceType && { learningResourceType }),
+      ...(downloadUrl && { encoding: { '@type': 'MediaObject', contentUrl: new URL(downloadUrl, site.url).href, encodingFormat: 'application/pdf' } }),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${url}#ruta`,
+      itemListElement: ruta.map(({ name, item }, index) => ({ '@type': 'ListItem', position: index + 1, name, item })),
+    },
+  ],
+};
+---
+
+<Base title={title} description={description} type="article" jsonLd={jsonLd} ogImage={`/og/${category}/${recurso.id}.jpg`}>
+  <article class="container recurso">
+    <nav class="breadcrumb no-print" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a href={`/${cat.id}/`}>{cat.name}</a>
+    </nav>
+
+    <header class="recurso-head" data-cat={category}>
+      <a class="cat-badge no-print" href={`/${cat.id}/`}>
+        <CatIcon cat={category} size={28} />
+        <span>{cat.name}</span>
+      </a>
+      <h1>{title}</h1>
+      <p class="lead">{description}</p>
+      <dl class="facts">
+        <div>
+          <dt>Edad</dt>
+          <dd>{edadesTexto(edades)}</dd>
+        </div>
+        {
+          duration && (
+            <div>
+              <dt>Duración</dt>
+              <dd>{duration}</dd>
+            </div>
+          )
+        }
+        <div>
+          <dt>Publicado</dt>
+          <dd><time datetime={published.toISOString().slice(0, 10)}>{formatoFecha(published)}</time></dd>
+        </div>
+        {updated && updated.getTime() !== published.getTime() && (
+          <div>
+            <dt>Actualizado</dt>
+            <dd><time datetime={updated.toISOString().slice(0, 10)}>{formatoFecha(updated)}</time></dd>
+          </div>
+        )}
+      </dl>
+    </header>
+
+    {
+      Sheet && (
+        <section class="sheet-wrap" aria-label="Ficha para imprimir">
+          <div class="sheet-tools no-print">
+            {downloadUrl && <a class="button" href={downloadUrl} download>Descargar ficha en PDF</a>}
+            <button class:list={['button', { 'button--quiet': downloadUrl }]} type="button" data-print>
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              </svg>
+              Imprimir o guardar en PDF
+            </button>
+            <p>Se imprime sola la hoja, en tamaño A4. Para PDF, elige «Guardar como PDF» en la ventana de impresión.</p>
+          </div>
+          <div class="sheet-paper">
+            <Sheet letra={letra} />
+          </div>
+        </section>
+      )
+    }
+
+    {
+      foto && (
+        <div class="recurso-media no-print">
+          <figure class="recurso-foto">
+            <Foto id={foto} sizes="(min-width: 56rem) 52rem, 100vw" eager />
+            <figcaption>Foto: <a href={fotos[foto].url} rel="noopener">{fotos[foto].autor}</a> en Unsplash</figcaption>
+          </figure>
+        </div>
+      )
+    }
+
+    <AdSlot placement="inArticle" />
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <AdSlot placement="endOfArticle" />
+
+    <aside class="related no-print" aria-labelledby="rel-title">
+      <h2 id="rel-title">También te puede servir</h2>
+      <ul class="resource-list">
+        {filasRelacionadas.map(({ recurso, foto: miniatura }) => <li><ResourceRow recurso={recurso} foto={miniatura} /></li>)}
+      </ul>
+    </aside>
+  </article>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-print]').forEach((b) => b.addEventListener('click', () => window.print()));
+</script>
+
+<style>
+  .recurso {
+    padding-top: var(--space-5);
+  }
+  .breadcrumb {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .breadcrumb a {
+    color: var(--ink-2);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .recurso-head {
+    max-width: 52rem;
+    padding-block: var(--space-4) var(--space-6);
+  }
+  .cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 40px;
+    padding: 0 var(--space-4) 0 var(--space-2);
+    margin-bottom: var(--space-5);
+    border-radius: 999px;
+    background: var(--cat);
+    color: var(--on-cat);
+    font-weight: 700;
+    font-size: var(--step--1);
+    text-decoration: none;
+  }
+  .cat-badge:hover {
+    text-decoration: underline;
+  }
+  .lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    line-height: 1.45;
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-6) 0 0;
+    font-size: var(--step--1);
+  }
+  .facts > div {
+    display: flex;
+    gap: 0.4em;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    background: var(--paper-2);
+  }
+  .facts dt {
+    color: var(--ink-2);
+  }
+  .facts dt::after {
+    content: ':';
+  }
+  .facts dd {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .recurso-media {
+    max-width: 56rem;
+    margin: 0 0 var(--space-7);
+  }
+  .recurso-foto { margin: 0; }
+  .recurso-foto :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  .recurso-foto figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .recurso-foto figcaption a {
+    color: var(--ink-2);
+  }
+
+  .sheet-wrap {
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: var(--space-7);
+  }
+  @media (min-width: 60rem) {
+    .sheet-wrap {
+      grid-template-columns: 1fr 2fr;
+      align-items: start;
+    }
+  }
+  .sheet-tools {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+  .sheet-tools p {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    max-width: 36ch;
+  }
+  .sheet-paper {
+    max-width: 38rem;
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .sheet-wrap {
+    padding: clamp(1rem, 3vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--paper-2);
+  }
+  .sheet-paper :global(.sheet) {
+    width: 100%;
+    height: auto;
+  }
+
+  .related {
+    margin-top: var(--space-9);
+  }
+  .related h2 {
+    font-size: var(--step-3);
+    margin-bottom: var(--space-5);
+  }
+
+  @media print {
+    .sheet-wrap {
+      padding: 0;
+      background: none;
+    }
+    .sheet-paper {
+      max-width: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .recurso-head .facts {
+      display: none;
+    }
+  }
+</style>

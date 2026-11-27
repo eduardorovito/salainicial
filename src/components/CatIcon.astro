@@ -1,0 +1,82 @@
+---
+// Ícono de sección con el color de texto de la etiqueta.
+interface Props {
+  cat: string;
+  size?: number;
+}
+const { cat, size = 48 } = Astro.props;
+---
+
+<svg viewBox="0 0 48 48" width={size} height={size} aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  {
+    cat === 'fichas' && (
+      <g transform="rotate(-38 24 24)">
+        <path d="M13 18.5h20v11H13z" />
+        <path d="M33 18.5l8 5.5-8 5.5z" />
+        <path d="M38.2 22.1l2.8 1.9-2.8 1.9z" fill="currentColor" />
+        <path d="M13 18.5H9.5A2.5 2.5 0 0 0 7 21v6a2.5 2.5 0 0 0 2.5 2.5H13z" fill="var(--cat)" />
+        <path d="M19 18.5v11M27 18.5v11" />
+      </g>
+    )
+  }
+  {
+    cat === 'planificaciones' && (
+      <g>
+        <rect x="11" y="6.5" width="28" height="35" rx="3" />
+        <path d="M18 15h15M18 21.5h15M18 28h10" />
+        {[11, 18.5, 26, 33.5].map((y) => (
+          <circle cx="11" cy={y} r="2.3" fill="var(--cat)" />
+        ))}
+      </g>
+    )
+  }
+  {
+    cat === 'juegos' && (
+      <g>
+        <circle cx="24" cy="24" r="16" />
+        <path d="M13.5 12.5c5 6 5 17 0 23M34.5 12.5c-5 6-5 17 0 23" />
+        <path d="M8 24h32" />
+      </g>
+    )
+  }
+  {
+    cat === 'efemerides' && (
+      <g>
+        <rect x="8" y="10" width="32" height="31" rx="4" fill="var(--cat)" />
+        <path d="M8 14a4 4 0 0 1 4-4h24a4 4 0 0 1 4 4v5H8z" />
+        <path d="M16 6.5v7M32 6.5v7" />
+        <circle cx="24" cy="30" r="7" />
+        <circle cx="24" cy="30" r="3.4" fill="var(--cat)" />
+      </g>
+    )
+  }
+  {
+    cat === 'actividades' && (
+      <g>
+        <path d="M15 17a9 9 0 0 1 18 0" />
+        <rect x="10" y="16" width="28" height="26" rx="7" />
+        <path d="M16 27h16v8H16z" fill="var(--cat)" />
+        <path d="M24 27v3" />
+      </g>
+    )
+  }
+  {
+    cat === 'cuentos' && (
+      <g>
+        <path d="M24 13c-4-3-10-4-17-3v26c7-1 13 0 17 3z" />
+        <path d="M24 13c4-3 10-4 17-3v26c-7-1-13 0-17 3z" fill="var(--cat)" />
+        <path d="M24 13v26M29 18.5c3-1 6-1.2 8-1M29 24.5c3-1 6-1.2 8-1" />
+        <path d="M33 6l1.2 2.6 2.8.3-2.1 1.9.6 2.8L33 12.2l-2.5 1.4.6-2.8-2.1-1.9 2.8-.3z" stroke-width="1.4" />
+      </g>
+    )
+  }
+  {
+    cat === 'blog' && (
+      <g>
+        <path d="M13 19h22c0 11.5-4 22-11 22S13 30.5 13 19z" />
+        <ellipse cx="24" cy="19" rx="11" ry="3.4" fill="var(--cat)" />
+        <path d="M26.5 18.5L33 5.5M30.5 5.5h5.5" />
+      </g>
+    )
+  }
+</svg>

@@ -1,0 +1,29 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const superficies = [
+  { titulo: 'Lisa', detalle: 'La superficie se siente pareja.', ondulada: false },
+  { titulo: 'Con relieve', detalle: 'Se sienten rayas, ondas o bultitos.', ondulada: true },
+];
+---
+
+<SheetFrame title="Exploramos las texturas" label="Ficha para dibujar o marcar una superficie lisa y una con relieve después de explorar materiales reales.">
+  <g fill="#1f1a17" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" font-size="4.7">
+    <text x="15" y="52">Toca los materiales. Dibuja o marca un ejemplo en cada recuadro.</text>
+    {superficies.map(({ titulo, detalle, ondulada }, indice) => (
+      <g transform={`translate(0 ${64 + indice * 103})`}>
+        <rect x="15" y="0" width="180" height="94" rx="4" fill="none" stroke="#796f67" stroke-width="0.55" />
+        <text x="22" y="13" font-size="6" font-weight="700">{titulo}</text>
+        <text x="22" y="22">{detalle}</text>
+
+        <g transform="translate(154 4)" fill="none" stroke="#1f1a17" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M0 12L10 4H34L24 12Z M0 12V17H24L34 9V4 M24 12V17" />
+          {ondulada && <path d="M5 12L15 4M11 12L21 4M17 12L27 4M3 15h18" />}
+        </g>
+
+        <path d="M22 29h166" fill="none" stroke="#796f67" stroke-width="0.45" />
+      </g>
+    ))}
+    <text x="15" y="275" font-weight="700">Señala la parte que tocaste y cuenta cómo se sintió.</text>
+  </g>
+</SheetFrame>

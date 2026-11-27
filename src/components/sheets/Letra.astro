@@ -1,0 +1,83 @@
+---
+import SheetFrame from './SheetFrame.astro';
+import { abecedario } from '../../data/abecedario.mjs';
+
+// Ficha de una letra: letra grande para decorar, renglones para repasar, búsqueda y dibujo.
+interface Props {
+  letra?: string;
+}
+const { letra = 'A' } = Astro.props;
+const U = letra.toLocaleUpperCase('es');
+const l = letra.toLocaleLowerCase('es');
+const info = abecedario.find((x) => x.l === U) ?? abecedario[0];
+
+const ink = '#1f1a17';
+const gris = '#d6cfca';
+const font = "Andika, 'Atkinson Hyperlegible Next', Arial, sans-serif";
+const body = "'Atkinson Hyperlegible Next', Arial, sans-serif";
+
+// Búsqueda de letras: 18 casilleros, 6 con la letra (3 mayúsculas y 3 minúsculas). Siempre el mismo orden para cada letra.
+// I y L se parecen mucho a otras letras en minúscula: no se usan como distractores (salvo en su propia ficha).
+const letras = abecedario.map((x) => x.l).filter((x) => x !== U && !['I', 'L'].includes(x));
+// M y W son muy anchas: van un poco más chicas para que no se toquen.
+const ancha = ['M', 'W'].includes(U);
+const grande = ancha ? 44 : 52;
+const repaso = ancha ? 18.5 : 22;
+let seed = [...U].reduce((a, c) => a + c.codePointAt(0)!, 0) * 9301 + 49297;
+const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+const celdas: string[] = [];
+for (let i = 0; i < 12; i++) {
+  const otra = letras[Math.floor(rnd() * letras.length)];
+  celdas.push(rnd() < 0.5 ? otra : otra.toLocaleLowerCase('es'));
+}
+celdas.push(U, U, U, l, l, l);
+for (let i = celdas.length - 1; i > 0; i--) {
+  const j = Math.floor(rnd() * (i + 1));
+  [celdas[i], celdas[j]] = [celdas[j], celdas[i]];
+}
+
+const filas = [
+  { y: 133, t: U },
+  { y: 179, t: l },
+].map((f) => ({ ...f, cap: f.y + 12, mid: f.y + 19, base: f.y + 30 }));
+---
+
+<SheetFrame title={`La letra ${U}`} label={`Ficha de la letra ${U}: la letra grande para decorar, renglones para repasar la ${U} mayúscula y la ${l} minúscula, una búsqueda de letras y un recuadro para dibujar`}>
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family={body}>
+    Decora la letra grande. Repasa las letras grises empezando desde arriba.
+  </text>
+
+  <rect x="15" y="55" width="104" height="72" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+  <g font-family={font} font-weight="700" font-size={grande} text-anchor="middle" fill="#fff" stroke={ink} stroke-width="1.6" stroke-linejoin="round" paint-order="stroke">
+    <text x="42" y="111">{U}</text>
+    <text x="94" y="111">{l}</text>
+  </g>
+
+  <rect x="124" y="55" width="71" height="72" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+  <text x="159.5" y="63" font-size="3.8" text-anchor="middle" fill="#4a423d" font-family={body}>Dibuja algo que empiece con {U}</text>
+
+  {
+    filas.map((f) => (
+      <g>
+        <rect x="15" y={f.y + 2} width="30" height="38" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+        <text x="30" y={f.base} font-size={repaso} font-family={font} font-weight="700" text-anchor="middle" fill={ink}>{f.t}</text>
+        <line x1="52" y1={f.cap} x2="195" y2={f.cap} stroke="#d9d2cc" stroke-width="0.3" />
+        <line x1="52" y1={f.mid} x2="195" y2={f.mid} stroke="#d9d2cc" stroke-width="0.3" stroke-dasharray="1.2 1.6" />
+        <line x1="52" y1={f.base} x2="195" y2={f.base} stroke="#8f857e" stroke-width="0.45" />
+        {[66, 92, 118, 144].map((x) => (
+          <text x={x} y={f.base} font-size={repaso} font-family={font} text-anchor="middle" fill={gris}>{f.t}</text>
+        ))}
+      </g>
+    ))
+  }
+
+  <rect x="15" y="225" width="180" height="50" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+  <text x="21" y="233" font-size="4.2" font-weight="700" fill={ink} font-family={body}>Busca y rodea todas las {U} y las {l}. ¿Cuántas encontraste?</text>
+  <g font-family={font} font-size="11" text-anchor="middle" fill={ink}>
+    {celdas.map((c, i) => <text x={27 + (i % 9) * 19.5} y={i < 9 ? 251 : 269}>{c}</text>)}
+  </g>
+
+  <text x="15" y="283" font-size="4" fill="#4a423d" font-family={body}>
+    Palabras con {U}: {info.palabras.join(', ')}.
+  </text>
+</SheetFrame>

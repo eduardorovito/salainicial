@@ -1,0 +1,34 @@
+---
+import Foto from './Foto.astro';
+import type { FotoId } from '../data/fotos';
+import { urlDe, categoriaDe, type Recurso } from '../lib/recursos';
+
+interface Props {
+  recurso: Recurso;
+  foto: FotoId | null;
+  showCategory?: boolean;
+  level?: 2 | 3;
+}
+const { recurso, foto, showCategory = true, level = 3 } = Astro.props;
+const { title, description, edades, duration, category } = recurso.data;
+const Heading = `h${level}` as 'h2' | 'h3';
+---
+
+<div class:list={['resource-row', { 'resource-row--text': !foto }]} data-cat={category}>
+  {foto && (
+    <span class="resource-thumb has-photo" aria-hidden="true">
+      <Foto id={foto} sizes="(min-width: 48rem) 6.5rem, 4rem" widths={[160, 320]} />
+    </span>
+  )}
+  {showCategory && <span class="section-label">{categoriaDe(category).name}</span>}
+  <Heading class="title"><a class="resource-link" href={urlDe(recurso)}>{title}</a></Heading>
+  <p>{description}</p>
+  {
+    (edades.length > 0 || duration) && (
+      <span class="meta">
+        {edades.map((e) => <span class="chip">{e} años</span>)}
+        {duration && <span>{duration}</span>}
+      </span>
+    )
+  }
+</div>

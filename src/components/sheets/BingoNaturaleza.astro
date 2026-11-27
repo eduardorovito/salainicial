@@ -1,0 +1,115 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+// Bingo de 3 x 3 para salir al patio: cada casillero tiene un dibujo, su nombre y un círculo para marcar.
+const ink = '#1f1a17';
+const body = "'Atkinson Hyperlegible Next', Arial, sans-serif";
+const sheetFont = "Andika, 'Atkinson Hyperlegible Next', Arial, sans-serif";
+const dot = (x: number, y: number, r = 1.2) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${ink}" stroke="none" />`;
+
+const cosas = [
+  {
+    nombre: 'hoja',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 12},${cy + 9} C${cx - 12},${cy - 5} ${cx},${cy - 13} ${cx + 12},${cy - 11} C${cx + 12},${cy + 1} ${cx + 2},${cy + 11} ${cx - 12},${cy + 9} Z" fill="#fff" />` +
+      `<path d="M${cx - 15},${cy + 12} L${cx - 12},${cy + 9} Q${cx - 2},${cy} ${cx + 8},${cy - 7}" />` +
+      `<path d="M${cx - 4},${cy + 2.5} L${cx - 3},${cy - 4}" /><path d="M${cx + 2},${cy - 2.5} L${cx + 3.5},${cy - 7.5}" /><path d="M${cx - 3.5},${cy + 2} L${cx + 2},${cy + 4}" />`,
+  },
+  {
+    nombre: 'piedra',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 13},${cy + 6} C${cx - 14},${cy - 2} ${cx - 6},${cy - 9} ${cx + 1},${cy - 8} C${cx + 9},${cy - 8} ${cx + 14},${cy - 1} ${cx + 13},${cy + 5} C${cx + 12},${cy + 10} ${cx - 11},${cy + 11} ${cx - 13},${cy + 6} Z" />` +
+      `<path d="M${cx - 6},${cy - 2} q3,-2 6,-1" /><path d="M${cx + 4},${cy + 4} q3,0 5,-2" />`,
+  },
+  {
+    nombre: 'rama',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 14},${cy + 9} Q${cx - 2},${cy + 2} ${cx + 14},${cy - 8}" stroke-width="2" />` +
+      `<path d="M${cx - 3},${cy + 3.5} Q${cx + 1},${cy + 8} ${cx + 6},${cy + 10}" stroke-width="1.3" />` +
+      `<path d="M${cx + 4},${cy - 2} Q${cx + 5},${cy - 8} ${cx + 2},${cy - 12}" stroke-width="1.2" />` +
+      `<ellipse cx="${cx + 8.5}" cy="${cy + 10}" rx="3" ry="1.6" transform="rotate(20 ${cx + 8.5} ${cy + 10})" fill="#fff" />`,
+  },
+  {
+    nombre: 'flor',
+    draw: (cx: number, cy: number) => {
+      let p = `<path d="M${cx},${cy + 1} Q${cx + 1.5},${cy + 8} ${cx},${cy + 14}" /><path d="M${cx + 0.6},${cy + 9} Q${cx + 6},${cy + 5} ${cx + 9},${cy + 7} Q${cx + 5},${cy + 11} ${cx + 0.6},${cy + 9} Z" fill="#fff" />`;
+      for (let i = 0; i < 5; i++) {
+        const a = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+        p += `<circle cx="${(cx + 5.4 * Math.cos(a)).toFixed(2)}" cy="${(cy - 4 + 5.4 * Math.sin(a)).toFixed(2)}" r="3.6" fill="#fff" />`;
+      }
+      return p + `<circle cx="${cx}" cy="${cy - 4}" r="2.6" fill="#fff" />`;
+    },
+  },
+  {
+    nombre: 'pluma',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 7},${cy + 8} C${cx - 11},${cy - 2} ${cx + 1},${cy - 12} ${cx + 9},${cy - 12} C${cx + 10},${cy - 4} ${cx + 3},${cy + 6} ${cx - 7},${cy + 8} Z" fill="#fff" />` +
+      `<path d="M${cx - 11},${cy + 12} L${cx + 9},${cy - 12}" />` +
+      `<path d="M${cx - 3},${cy + 2.5} l-3.5,-2.5" /><path d="M${cx + 2},${cy - 3.5} l3.5,2" />`,
+  },
+  {
+    nombre: 'semillas',
+    draw: (cx: number, cy: number) =>
+      `<ellipse cx="${cx - 7}" cy="${cy + 3}" rx="3.6" ry="5.6" transform="rotate(-25 ${cx - 7} ${cy + 3})" />` +
+      `<ellipse cx="${cx + 1}" cy="${cy - 5}" rx="3.6" ry="5.6" transform="rotate(15 ${cx + 1} ${cy - 5})" />` +
+      `<ellipse cx="${cx + 8}" cy="${cy + 5}" rx="3.6" ry="5.6" transform="rotate(40 ${cx + 8} ${cy + 5})" />`,
+  },
+  {
+    nombre: 'bicho',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 7.5},${cy - 2} l-4.5,-2.5 M${cx - 8.5},${cy + 2} l-4.5,0 M${cx - 7.5},${cy + 6} l-3.5,3 M${cx + 7.5},${cy - 2} l4.5,-2.5 M${cx + 8.5},${cy + 2} l4.5,0 M${cx + 7.5},${cy + 6} l3.5,3" />` +
+      `<path d="M${cx - 1.5},${cy - 9.5} l-2.5,-3.5 M${cx + 1.5},${cy - 9.5} l2.5,-3.5" />` +
+      `<path d="M${cx - 4.5},${cy - 5} A4.5,4.5 0 0 1 ${cx + 4.5},${cy - 5} Z" fill="#fff" />` +
+      `<circle cx="${cx}" cy="${cy + 2}" r="8.5" fill="#fff" />` +
+      `<path d="M${cx},${cy - 6.5} L${cx},${cy + 10.5}" />` +
+      dot(cx - 4, cy - 1) +
+      dot(cx + 4, cy - 1) +
+      dot(cx - 4.5, cy + 5) +
+      dot(cx + 4.5, cy + 5),
+  },
+  {
+    nombre: 'nube',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 13},${cy + 6} L${cx + 13},${cy + 6} A5,5 0 0 0 ${cx + 11},${cy - 3} A7.5,7.5 0 0 0 ${cx - 1},${cy - 8} A6,6 0 0 0 ${cx - 10},${cy - 1} A4,4 0 0 0 ${cx - 13},${cy + 6} Z" />`,
+  },
+  {
+    nombre: 'pájaro',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx + 8},${cy + 1} L${cx + 15},${cy - 4} L${cx + 15.5},${cy + 3.5} Z" fill="#fff" />` +
+      `<ellipse cx="${cx + 1}" cy="${cy + 2}" rx="9" ry="6" fill="#fff" />` +
+      `<path d="M${cx - 1},${cy + 1} Q${cx + 4},${cy - 3} ${cx + 7},${cy + 2}" />` +
+      `<circle cx="${cx - 7.5}" cy="${cy - 3.5}" r="4.6" fill="#fff" />` +
+      `<path d="M${cx - 11.8},${cy - 4.8} L${cx - 15.5},${cy - 3.2} L${cx - 11.8},${cy - 2} Z" fill="#fff" />` +
+      dot(cx - 8.5, cy - 4.5, 0.8) +
+      `<path d="M${cx - 1},${cy + 7.6} l-1,4 M${cx + 3},${cy + 7.6} l1,4" />`,
+  },
+];
+
+const celdas = cosas.map((c, i) => {
+  const x = 15 + (i % 3) * 61;
+  const y = 56 + Math.floor(i / 3) * 65;
+  return { ...c, x, y, cx: x + 29, cy: y + 27 };
+});
+---
+
+<SheetFrame title="Bingo de la naturaleza" label="Bingo de la naturaleza de tres por tres para jugar al aire libre: hoja, piedra, rama, flor, pluma, semillas, bicho, nube y pájaro, cada uno con un círculo para marcar">
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family={body}>
+    Busca estas cosas al aire libre. Pide a un adulto que te lea los nombres.
+  </text>
+  {
+    celdas.map((c) => (
+      <g>
+        <rect x={c.x} y={c.y} width="58" height="62" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+        <circle cx={c.x + 51} cy={c.y + 7} r="3.2" fill="none" stroke={ink} stroke-width="0.6" />
+        <g fill="none" stroke={ink} stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" set:html={c.draw(c.cx, c.cy)} />
+        <text x={c.cx} y={c.y + 55} font-size="5.6" font-family={sheetFont} font-weight="700" text-anchor="middle" fill={ink}>{c.nombre}</text>
+      </g>
+    ))
+  }
+  <g font-family={body} fill={ink}>
+    <text x="15" y="258" font-size="4.6" font-weight="700">¿Cómo se juega?</text>
+    <text x="15" y="265" font-size="4">Salgan al patio o a la plaza. Cuando encuentres algo de la hoja, marca su círculo.</text>
+    <text x="15" y="271" font-size="4">Mira y toca con cuidado, y deja todo en su lugar: no arranques hojas ni flores.</text>
+    <text x="15" y="277" font-size="4">¿Encontraste algo que no está en la hoja? Dibújalo en el dorso.</text>
+  </g>
+</SheetFrame>

@@ -1,0 +1,78 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+// Cinco filas con dibujos para contar, pintar y escribir el número.
+const ink = '#1f1a17';
+const sw = 0.7;
+
+const star = (cx: number, cy: number, r: number) => {
+  const p: string[] = [];
+  for (let i = 0; i < 10; i++) {
+    const rad = i % 2 === 0 ? r : r * 0.45;
+    const ang = -Math.PI / 2 + (i * Math.PI) / 5;
+    p.push(`${(cx + rad * Math.cos(ang)).toFixed(2)},${(cy + rad * Math.sin(ang)).toFixed(2)}`);
+  }
+  return `<path d="M${p.join(' L')} Z" />`;
+};
+const pelota = (cx: number, cy: number) =>
+  `<circle cx="${cx}" cy="${cy}" r="8" /><path d="M${cx - 5.6},${cy - 5.7} Q${cx - 1.6},${cy} ${cx - 5.6},${cy + 5.7}" /><path d="M${cx + 5.6},${cy - 5.7} Q${cx + 1.6},${cy} ${cx + 5.6},${cy + 5.7}" />`;
+const sol = (cx: number, cy: number) => {
+  let rays = '';
+  for (let i = 0; i < 8; i++) {
+    const a = (i * Math.PI) / 4;
+    rays += `<line x1="${(cx + 9.5 * Math.cos(a)).toFixed(2)}" y1="${(cy + 9.5 * Math.sin(a)).toFixed(2)}" x2="${(cx + 13 * Math.cos(a)).toFixed(2)}" y2="${(cy + 13 * Math.sin(a)).toFixed(2)}" stroke-linecap="round" />`;
+  }
+  return `<circle cx="${cx}" cy="${cy}" r="7.5" />${rays}`;
+};
+const manzana = (cx: number, cy: number) =>
+  `<path d="M${cx},${cy - 5} C${cx - 4},${cy - 9} ${cx - 10},${cy - 6} ${cx - 9},${cy + 1} C${cx - 8},${cy + 7} ${cx - 4},${cy + 9} ${cx},${cy + 7} C${cx + 4},${cy + 9} ${cx + 8},${cy + 7} ${cx + 9},${cy + 1} C${cx + 10},${cy - 6} ${cx + 4},${cy - 9} ${cx},${cy - 5} Z" />` +
+  `<path d="M${cx},${cy - 5} Q${cx + 0.5},${cy - 9} ${cx + 1.5},${cy - 11}" stroke-linecap="round" />` +
+  `<path d="M${cx + 1},${cy - 8} C${cx + 4},${cy - 12} ${cx + 8},${cy - 11} ${cx + 8},${cy - 10} C${cx + 6},${cy - 7} ${cx + 3},${cy - 7} ${cx + 1},${cy - 8} Z" />`;
+const flor = (cx: number, cy: number) => {
+  let petals = '';
+  for (let i = 0; i < 5; i++) {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+    petals += `<circle cx="${(cx + 5.5 * Math.cos(a)).toFixed(2)}" cy="${(cy + 5.5 * Math.sin(a)).toFixed(2)}" r="3" />`;
+  }
+  return `${petals}<circle cx="${cx}" cy="${cy}" r="2.5" />`;
+};
+
+const filas = [
+  { n: 3, draw: pelota },
+  { n: 1, draw: sol },
+  { n: 5, draw: (x: number, y: number) => star(x, y, 9) },
+  { n: 2, draw: manzana },
+  { n: 4, draw: flor },
+];
+
+const top = 56;
+const h = 40;
+const gap = 4;
+const rows = filas.map((f, i) => {
+  const y = top + i * (h + gap);
+  const cy = y + h / 2;
+  const spacing = 24;
+  const startX = 30;
+  let svg = '';
+  for (let k = 0; k < f.n; k++) svg += f.draw(startX + k * spacing, cy);
+  return { y, cy, svg };
+});
+---
+
+<SheetFrame title="Cuenta y escribe el número" label="Ficha para contar del 1 al 5: pelotas, un sol, estrellas, manzanas y flores con un recuadro para escribir cuántos hay">
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif">
+    Cuenta los dibujos de cada fila y escribe cuántos hay en el cuadrado. Después, píntalos.
+  </text>
+  {
+    rows.map((r) => (
+      <g>
+        <rect x="15" y={r.y} width="180" height={h} rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+        <g fill="none" stroke={ink} stroke-width={sw} stroke-linejoin="round" set:html={r.svg} />
+        <rect x="160" y={r.y + 6} width="28" height="28" rx="3" fill="none" stroke={ink} stroke-width="0.8" />
+      </g>
+    ))
+  }
+  <text x="15" y="282" font-size="4.6" font-weight="700" fill={ink} font-family="'Atkinson Hyperlegible Next', Arial, sans-serif">
+    ¿En qué fila hay más? Márcala con una cruz.
+  </text>
+</SheetFrame>

@@ -1,0 +1,26 @@
+---
+// Hoja A4 (210 x 297 mm). Todo lo que va adentro se dibuja en milímetros.
+import { site } from '../../site.config.mjs';
+
+interface Props {
+  title: string;
+  label: string;
+}
+const { title, label } = Astro.props;
+const host = new URL(site.url).host.replace(/^www\./, '');
+// Con el dominio propio (salainicial.com) alcanza con la dirección; antes, nombre y dirección.
+const pie = host.startsWith(site.name.toLowerCase()) ? host : `${site.name} · ${host}`;
+---
+
+<svg class="sheet" viewBox="0 0 210 297" role="img" aria-label={label} xmlns="http://www.w3.org/2000/svg">
+  <rect width="210" height="297" fill="#fff"></rect>
+  <g font-family="'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', Arial, sans-serif" fill="#1f1a17">
+    <text x="15" y="24" font-size="8.5" font-weight="700">{title}</text>
+    <text x="15" y="40" font-size="4.6">Nombre:</text>
+    <line x1="35" y1="40.5" x2="138" y2="40.5" stroke="#1f1a17" stroke-width="0.35"></line>
+    <text x="144" y="40" font-size="4.6">Fecha:</text>
+    <line x1="160" y1="40.5" x2="195" y2="40.5" stroke="#1f1a17" stroke-width="0.35"></line>
+    <text x="15" y="289" font-size="3" fill="#6b625d">{pie}</text>
+  </g>
+  <slot />
+</svg>

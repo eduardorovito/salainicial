@@ -1,0 +1,57 @@
+---
+import TextPage from '../components/TextPage.astro';
+import { site } from '../site.config.mjs';
+import { fotos } from '../data/fotos';
+---
+
+<TextPage
+  title="Aviso legal"
+  description={`Condiciones de uso de los recursos de ${site.name}.`}
+  updated="18 de noviembre de 2026"
+>
+  <h2>Uso de los recursos</h2>
+  <p>
+    Puedes leer, imprimir, fotocopiar y usar todos los recursos de {site.name} en tu aula, en tu institución y con las
+    familias de tu grupo, sin pedir permiso. También puedes adaptarlos a tu realidad.
+  </p>
+  <p>
+    Lo que no está permitido es republicar los textos o las fichas en otros sitios web, redes o plataformas, ni venderlos,
+    sin autorización escrita. Si quieres compartirlos, comparte el enlace a la página.
+  </p>
+
+  <h2>Sobre el contenido</h2>
+  <p>
+    Los recursos son sugerencias para enriquecer tu planificación. Cada docente conoce a su grupo y es quien decide qué
+    usar, cómo adaptarlo y cómo articularlo con el currículo oficial de tu país o región. Revisamos el contenido con
+    cuidado, pero si encuentras un error, escríbenos y lo corregimos.
+  </p>
+
+  <h2>Enlaces a otros sitios</h2>
+  <p>
+    Algunas páginas enlazan a sitios externos. No somos responsables por su contenido ni por sus políticas de privacidad.
+  </p>
+
+  <h2>Publicidad</h2>
+  <p>
+    El sitio se sostiene con anuncios de Google AdSense. Los anuncios los elige Google y no implican que recomendemos los
+    productos o servicios que aparecen. Más detalles en la <a href="/privacidad/">política de privacidad</a>.
+  </p>
+
+  <h2 id="fotos">Créditos de las fotos</h2>
+  <p>
+    Las fotografías del sitio son de <a href="https://unsplash.com/es">Unsplash</a> y se usan según su licencia, que
+    permite el uso gratuito, también comercial. Las ilustraciones y las fichas son propias. Agradecemos a sus autores:
+  </p>
+  <ul>
+    {
+      Object.values(fotos).map((f) => (
+        <li>
+          {f.alt}: <a href={f.url}>{f.autor}</a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Contacto</h2>
+  <p>Para cualquier consulta sobre estas condiciones, visita la <a href="/contacto/">página de contacto</a>.</p>
+</TextPage>

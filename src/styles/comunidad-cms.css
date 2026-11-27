@@ -1,0 +1,17 @@
+.cms { padding-block: var(--space-7); display: grid; gap: var(--space-5); }
+.cms [hidden] { display: none !important; }
+.cms h1 { font-size: var(--step-4); }
+.cms h2 { font-size: var(--step-2); }
+.cms h3 { font-size: var(--step-1); }
+.cms .cms-stack { display: grid; gap: var(--space-4); }
+.cms .cms-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.cms .cms-card { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-5); min-width: 0; overflow-wrap: anywhere; }
+.cms .cms-card p { white-space: pre-wrap; }
+.cms .cms-field { display: grid; gap: var(--space-2); font-weight: 700; }
+.cms :is(input, select, textarea) {
+  min-height: 44px; max-width: 100%; padding: 0.55rem 0.75rem; font: inherit;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm); color: var(--ink); background: var(--paper);
+}
+.cms textarea { resize: vertical; }
+.cms .cms-meta { font-size: var(--step--1); color: var(--ink-2); }
+.cms .cms-status:empty { display: none; }

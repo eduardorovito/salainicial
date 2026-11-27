@@ -1,0 +1,38 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const materiales = ['Lámina transparente', 'Papel traslúcido', 'Cartón'];
+const opciones = ['Mucha', 'Un poco', 'Casi nada'];
+---
+
+<SheetFrame title="¿Cuánta luz pasa?" label="Tabla de observación para tres materiales. Permite marcar si se ve mucha luz, un poco o casi nada al otro lado.">
+  <g fill="#1f1a17" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" font-size="4.7">
+    <text x="15" y="52">Ilumina cada material y mira la hoja que está al otro lado.</text>
+    <text x="15" y="60">Marca cuánta luz ves después de cada prueba.</text>
+
+    <g stroke="#1f1a17" stroke-width=".85" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M20 81v13h22l11-4v-5l-11-4z M42 81v13 M26 79h6v2" />
+      <path d="M59 83l24-8 M59 88h24 M59 93l24 8" stroke-dasharray="2 2.5" />
+      <path d="M88 73h6v30h-6z M98 88h23m-3-3 3 3-3 3 M130 72h52v32h-52z" />
+    </g>
+    <text x="35" y="112" text-anchor="middle" font-size="4.2">Linterna</text>
+    <text x="91" y="112" text-anchor="middle" font-size="4.2">Material</text>
+    <text x="156" y="112" text-anchor="middle" font-size="4.2">Hoja blanca</text>
+
+    <rect x="15" y="124" width="180" height="122" rx="4" fill="none" stroke="#796f67" stroke-width=".55" />
+    <path d="M78 124v122 M117 124v122 M156 124v122 M15 145h180 M15 179h180 M15 213h180" fill="none" stroke="#796f67" stroke-width=".45" />
+    <text x="21" y="137" font-weight="700">Material</text>
+    {opciones.map((opcion, indice) => (
+      <text x={97.5 + indice * 39} y="137" text-anchor="middle" font-weight="700">{opcion}</text>
+    ))}
+    {materiales.map((material, fila) => (
+      <g transform={`translate(0 ${162 + fila * 34})`}>
+        <text x="21" y="1.6">{material}</text>
+        {opciones.map((_, columna) => (
+          <circle cx={97.5 + columna * 39} cy="0" r="6" fill="none" stroke="#1f1a17" stroke-width=".7" />
+        ))}
+      </g>
+    ))}
+    <text x="15" y="265" font-weight="700">Señala dos pruebas que dieron resultados diferentes.</text>
+  </g>
+</SheetFrame>

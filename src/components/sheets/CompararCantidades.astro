@@ -1,0 +1,37 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const ejercicios = [
+  { titulo: '1. ¿Hay la misma cantidad?', arriba: [72, 109, 146], abajo: [58, 109, 160] },
+  { titulo: '2. ¿En qué fila hay más?', arriba: [64, 95, 126, 157], abajo: [80, 138] },
+  { titulo: '3. ¿En qué fila hay menos?', arriba: [61, 160], abajo: [80, 99, 118, 137] },
+];
+---
+
+<SheetFrame title="Compara las cantidades" label="Ficha para grupos de 4 y 5 años, con tres pares de filas de lápices para comparar cantidades">
+  <g font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" fill="#1f1a17">
+    <text x="195" y="24" text-anchor="end" font-size="4.2">Grupos de 4 y 5 años</text>
+    <text x="15" y="52" font-size="4.5">Une los lápices de las dos filas uno a uno.</text>
+    <text x="15" y="59" font-size="4.5">Responde la pregunta de cada recuadro.</text>
+
+    {ejercicios.map(({ titulo, arriba, abajo }, indice) => (
+      <g transform={`translate(0 ${66 + indice * 67})`}>
+        <rect x="15" y="0" width="180" height="61" rx="4" fill="none" stroke="#796f67" stroke-width="0.5" />
+        <text x="21" y="9" font-size="5" font-weight="700">{titulo}</text>
+        <text x="21" y="25" font-size="4.6">Fila A</text>
+        <text x="21" y="52" font-size="4.6">Fila B</text>
+        <g fill="none" stroke="#1f1a17" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+          {arriba.map((x) => (
+            <path transform={`translate(${x} 18)`} d="M-3.6 0H3.6V7L0 12-3.6 7ZM-3.6 2.5H3.6M-3.6 7H3.6M-1.35 10H1.35" />
+          ))}
+          {abajo.map((x) => (
+            <path transform={`translate(${x} 54) scale(1 -1)`} d="M-3.6 0H3.6V7L0 12-3.6 7ZM-3.6 2.5H3.6M-3.6 7H3.6M-1.35 10H1.35" />
+          ))}
+        </g>
+      </g>
+    ))}
+
+    <text x="15" y="272" font-size="4.6" font-weight="700">Cuenta cómo lo comprobaste.</text>
+    <text x="15" y="279" font-size="4.5">Puedes señalar los pares o los lápices que quedaron sueltos.</text>
+  </g>
+</SheetFrame>

@@ -1,0 +1,27 @@
+---
+import SheetFrame from './SheetFrame.astro';
+import DibujoPalabra from './DibujoPalabra.astro';
+
+const filas = [
+  ['sol', 'mesa', 'silla'],
+  ['mano', 'mesa', 'pera'],
+  ['pato', 'cuna', 'pera'],
+] as const;
+---
+
+<SheetFrame title="¿Con qué sonido empieza?" label="Tres filas de dibujos. Escucha el primer dibujo de cada fila y elige entre los otros dos el que empieza con el mismo sonido">
+  <text x="15" y="50" font-size="4.3" fill="#1f1a17">Di el nombre de cada dibujo. Rodea el que empieza igual.</text>
+  <text x="49" y="64" text-anchor="middle" font-size="4.4" font-weight="700">Escucha primero</text>
+  <text x="133" y="64" text-anchor="middle" font-size="4.4" font-weight="700">Elige uno de estos</text>
+  <path d="M79 67V252" fill="none" stroke="#aca4a0" stroke-width="0.5" />
+  {filas.map((palabras, fila) => palabras.map((palabra, i) => {
+    const x = [34, 94, 146][i];
+    const y = 76 + fila * 63;
+    return (
+      <g>
+        <DibujoPalabra palabra={palabra} {x} {y} />
+        <text x={x + 14} y={y + 38} text-anchor="middle" font-size="4.3" fill="#292421">{palabra}</text>
+      </g>
+    );
+  }))}
+</SheetFrame>

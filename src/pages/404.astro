@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Página no encontrada" noindex>
+  <div class="container nf">
+    <h1>No encontramos esta página.</h1>
+    <p>Puede que el recurso haya cambiado de lugar. Prueba desde alguna de estas secciones.</p>
+    <p class="links">
+      <a class="button" href="/">Ir al inicio</a>
+      <a class="button button--quiet" href="/fichas/">Ver fichas</a>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .nf {
+    padding-block: var(--space-8);
+  }
+  .nf p {
+    margin-top: var(--space-4);
+    color: var(--ink-2);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

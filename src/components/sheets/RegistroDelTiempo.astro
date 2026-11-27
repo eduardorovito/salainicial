@@ -1,0 +1,44 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const symbols = [
+  { label: 'Sol', path: 'M5 0a5 5 0 1 0-10 0 5 5 0 0 0 10 0ZM0-8v-3M0 8v3M-8 0h-3M8 0h3M-5.7-5.7l-2-2M5.7 5.7l2 2M5.7-5.7l2-2M-5.7 5.7l-2 2' },
+  { label: 'Nubes', path: 'M-8 5a4 4 0 0 1-.5-8 5.7 5.7 0 0 1 10.5-2A5 5 0 1 1 6 5Z' },
+  { label: 'Lluvia', path: 'M-8-1a4 4 0 0 1-.5-8 5.7 5.7 0 0 1 10.5-2A5 5 0 1 1 6-1ZM-5 3l-2 5M0 3l-2 5M5 3L3 8' },
+  { label: 'Viento', path: 'M-10-4H3a3 3 0 1 0-3-3M-11 1H8a2.5 2.5 0 1 0-2.5-2.5M-8 6H2a2.5 2.5 0 1 1-2.5 2.5' },
+];
+---
+
+<SheetFrame title="¿Cómo está el tiempo?" label="Registro del tiempo para tres días. Incluye una guía con dibujos de sol, nubes, lluvia y viento y un espacio de observación en cada día.">
+  <g fill="#1f1a17" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" font-size="4.5">
+    <text x="15" y="52">Mira afuera. Dibuja o marca lo que observas cada día.</text>
+    <text x="15" y="59">Puedes marcar más de un dibujo.</text>
+    <text x="15" y="71" font-weight="700">Guía de dibujos</text>
+
+    {symbols.map(({ label, path }, i) => (
+      <g transform={`translate(${35 + i * 46} 86)`}>
+        <path d={path} fill="none" stroke="#1f1a17" stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round" />
+        <text x="0" y="19" text-anchor="middle">{label}</text>
+      </g>
+    ))}
+
+    {[1, 2, 3].map((day) => (
+      <g transform={`translate(0 ${110 + (day - 1) * 57})`}>
+        <rect x="15" y="0" width="180" height="53" rx="4" fill="none" stroke="#796f67" stroke-width="0.55" />
+        <text x="21" y="9" font-size="5" font-weight="700">Día {day}</text>
+        <text x="145" y="9">Fecha:</text>
+        <path d="M160 9.5h28" stroke="#1f1a17" stroke-width="0.4" />
+        {symbols.map(({ label, path }, i) => (
+          <g transform={`translate(${29 + i * 25} 28)`}>
+            <path d={path} transform="scale(.65)" fill="none" stroke="#1f1a17" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+            <text x="0" y="16" text-anchor="middle" font-size="4">{label}</text>
+          </g>
+        ))}
+        <path d="M117 16v31" stroke="#796f67" stroke-width="0.45" />
+        <text x="123" y="20">Otra cosa que observé</text>
+      </g>
+    ))}
+
+    <text x="15" y="284" font-weight="700">¿Qué cambió entre un día y otro? Cuéntalo o señálalo.</text>
+  </g>
+</SheetFrame>

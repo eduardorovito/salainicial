@@ -1,0 +1,40 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+// Números del 1 al 10: modelo, dos copias grises para repasar y puntos para pintar la cantidad.
+const font = "Andika, 'Atkinson Hyperlegible Next', Arial, sans-serif";
+const top = 56;
+const h = 44;
+const cells = Array.from({ length: 10 }, (_, i) => {
+  const n = i + 1;
+  const col = i < 5 ? 0 : 1;
+  const row = i % 5;
+  const x = 15 + col * 92;
+  const y = top + row * h;
+  const dots = Array.from({ length: n }, (_, k) => ({
+    cx: x + 69 + (k % 5) * 3.6,
+    cy: y + 17 + Math.floor(k / 5) * 4.4,
+  }));
+  return { n, x, y, dots };
+});
+---
+
+<SheetFrame title="Repasa los números del 1 al 10" label="Ficha de números del 1 al 10 para repasar, con un número modelo, dos copias grises y puntos para pintar la cantidad">
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif">
+    Repasa los números grises y pinta tantos puntos como dice cada número.
+  </text>
+  {
+    cells.map((c) => (
+      <g>
+        <rect x={c.x} y={c.y} width="88" height="40" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+        <text x={c.x + 11.5} y={c.y + 27} font-size={c.n === 10 ? 12.5 : 16} font-family={font} font-weight="700" text-anchor="middle" fill="#1f1a17">{c.n}</text>
+        <line x1={c.x + 23} y1={c.y + 27.5} x2={c.x + 64} y2={c.y + 27.5} stroke="#8f857e" stroke-width="0.4" />
+        <text x={c.x + 33} y={c.y + 27} font-size={c.n === 10 ? 12.5 : 16} font-family={font} text-anchor="middle" fill="#d6cfca">{c.n}</text>
+        <text x={c.x + 54} y={c.y + 27} font-size={c.n === 10 ? 12.5 : 16} font-family={font} text-anchor="middle" fill="#d6cfca">{c.n}</text>
+        {c.dots.map((d) => (
+          <circle cx={d.cx} cy={d.cy} r="1.35" fill="none" stroke="#1f1a17" stroke-width="0.4" />
+        ))}
+      </g>
+    ))
+  }
+</SheetFrame>

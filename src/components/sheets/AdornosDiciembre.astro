@@ -1,0 +1,19 @@
+---
+import SheetFrame from './SheetFrame.astro';
+---
+
+<SheetFrame title="Adornos de papel" label="Tres adornos grandes con forma de círculo, cuadrado y triángulo, y un espacio para dibujar otro">
+  <g font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" fill="#1f1a17">
+    <text x="15" y="53" font-size="4.6">Elige un adorno. Puedes decorarlo con papel o con crayones.</text>
+    <text x="15" y="63" font-size="4.6">Muéstralo al grupo para armar una guirnalda entre todos.</text>
+    <text x="15" y="178" font-size="5" font-weight="700">Si quieres, inventa otro adorno.</text>
+  </g>
+  <g fill="none" stroke="#1f1a17" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="45" cy="119" r="23" />
+    <path d="M41 96V90h8v6M45 90C38 82 52 82 45 90" />
+    <rect x="82" y="96" width="46" height="46" rx="6" />
+    <path d="M101 96V90h8v6M105 90C98 82 112 82 105 90" />
+    <path d="M165 96l25 46h-50zM165 96V89M165 89C158 81 172 81 165 89" />
+    <rect x="15" y="185" width="180" height="92" rx="5" stroke="#81756b" stroke-width="0.55" />
+  </g>
+</SheetFrame>

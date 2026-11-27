@@ -1,0 +1,79 @@
+---
+import TextPage from '../components/TextPage.astro';
+
+const cuentas = [
+  {
+    red: 'Instagram',
+    nombre: '@ideasparaninos',
+    url: 'https://www.instagram.com/ideasparaninos/',
+    tipo: 'Manualidades y experimentos para infantil y primaria.',
+  },
+  {
+    red: 'Instagram',
+    nombre: '@mestraambidees',
+    url: 'https://www.instagram.com/mestraambidees/',
+    tipo: 'Ideas para el aula. Según una nota de elDiario.es, vende materiales.',
+  },
+  {
+    red: 'Instagram',
+    nombre: '@petitsdepoble',
+    url: 'https://www.instagram.com/petitsdepoble/',
+    tipo: 'Recursos para el aula de infantil. Algunos materiales son de pago.',
+  },
+  {
+    red: 'Instagram',
+    nombre: '@profespapeltijera',
+    url: 'https://www.instagram.com/profespapeltijera/',
+    tipo: 'Materiales y actividades para el aula. Algunos materiales son de pago.',
+  },
+  {
+    red: 'TikTok',
+    nombre: '@lapizarradeloreto',
+    url: 'https://www.tiktok.com/@lapizarradeloreto',
+    tipo: 'Ideas manipulativas para infantil y primaria, lectoescritura y organización del aula.',
+  },
+  {
+    red: 'TikTok',
+    nombre: '@maestradepueblo',
+    url: 'https://www.tiktok.com/@maestradepueblo',
+    tipo: 'Actividades de lectoescritura, dinámicas de participación y materiales creativos.',
+  },
+];
+---
+
+<TextPage
+  title="Cuentas recomendadas"
+  description="Docentes y creadores en Instagram y TikTok con ideas para el aula de educación inicial."
+>
+  <p>
+    Estas son cuentas de docentes y creadores que comparten ideas para el aula. Las recomendamos por su contenido,
+    pero no somos responsables de lo que publican. Todo el material que aparece en sus perfiles es de quienes lo crean.
+    Si una cuenta cambia o deja de estar activa, consulta nuestra <a href="/contacto/">página de contacto</a>.
+  </p>
+
+  <h2>Instagram</h2>
+  <ul>
+    {cuentas.filter((c) => c.red === 'Instagram').map((c) => (
+      <li>
+        <a href={c.url} rel="noopener nofollow" target="_blank"><strong>{c.nombre}</strong></a>: {c.tipo}
+      </li>
+    ))}
+  </ul>
+
+  <h2>TikTok</h2>
+  <ul>
+    {cuentas.filter((c) => c.red === 'TikTok').map((c) => (
+      <li>
+        <a href={c.url} rel="noopener nofollow" target="_blank"><strong>{c.nombre}</strong></a>: {c.tipo}
+      </li>
+    ))}
+  </ul>
+
+  <h2>YouTube</h2>
+  <ul>
+    <li>
+      <a href="https://www.educ.ar/recursos/155814/nivel-inicial" rel="noopener" target="_blank"><strong>Nivel Inicial, educ.ar</strong></a>:
+      recursos, juegos y actividades del portal educ.ar. Material del Estado con licencia Creative Commons no comercial.
+    </li>
+  </ul>
+</TextPage>

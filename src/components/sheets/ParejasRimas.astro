@@ -1,0 +1,23 @@
+---
+import SheetFrame from './SheetFrame.astro';
+import DibujoPalabra from './DibujoPalabra.astro';
+
+const inicio = ['gato', 'luna', 'ratón'] as const;
+const opciones = ['cuna', 'botón', 'pato'] as const;
+---
+
+<SheetFrame title="Parejas que riman" label="Une los dibujos de gato, luna y ratón con los de pato, cuna y botón para formar parejas que riman">
+  <text x="15" y="50" font-size="4.4" fill="#1f1a17">Di los nombres. Une los que tienen un final parecido.</text>
+  {[inicio, opciones].map((columna, i) => columna.map((palabra, fila) => {
+    const x = i === 0 ? 37 : 146;
+    const y = 69 + fila * 64;
+    return (
+      <g>
+        <DibujoPalabra palabra={palabra} {x} {y} escala={1.06} />
+        <text x={x + 15} y={y + 37} text-anchor="middle" font-size="4.4" fill="#292421">{palabra}</text>
+        <circle cx={i === 0 ? 77 : 133} cy={y + 15} r="1.65" fill="#292421" />
+      </g>
+    );
+  }))}
+  <text x="15" y="273" font-size="4.3" fill="#1f1a17">¿Puedes inventar otra palabra que rime?</text>
+</SheetFrame>

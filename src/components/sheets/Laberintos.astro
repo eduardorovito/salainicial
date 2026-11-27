@@ -1,0 +1,34 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const recorridos = [
+  {
+    titulo: 'Primer recorrido',
+    y: 59,
+    entrada: [28, 43],
+    llegada: [180, 70],
+    caminos: 'M28 43H65V60H113V29H156V70H180 M65 43V23H96 M113 60V82H145 M156 29H179',
+  },
+  {
+    titulo: 'Segundo recorrido',
+    y: 166,
+    entrada: [28, 35],
+    llegada: [180, 62],
+    caminos: 'M28 35H56V78H86V46H124V74H154V42H180V62 M56 35V22H104V33 M86 78V88H115 M124 46V23H168 M154 74V87H180 M154 42H141',
+  },
+];
+---
+
+<SheetFrame title="Laberintos sencillos" label="Dos laberintos. Cada uno empieza en el círculo, tiene desvíos que terminan en un callejón y termina en una bandera">
+  <text x="15" y="50" font-size="4.4" fill="#1f1a17">Traza un camino desde el círculo hasta la bandera.</text>
+  {recorridos.map(({ titulo, y, entrada, llegada, caminos }) => (
+    <g transform={`translate(0 ${y})`}>
+      <text x="15" y="8" font-size="4.6" font-weight="700" fill="#1f1a17">{titulo}</text>
+      <path d={caminos} fill="none" stroke="#292421" stroke-width="9.3" stroke-linecap="round" stroke-linejoin="round" />
+      <path d={caminos} fill="none" stroke="#fff" stroke-width="7.6" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx={entrada[0]} cy={entrada[1]} r="2.4" stroke="#292421" stroke-width="0.7" fill="white" />
+      <path d={`M${llegada[0] - 1.8} ${llegada[1] + 2.3}v-4.8l3.8 1.3-3.8 1.5`} stroke="#292421" stroke-width="0.65" fill="none" />
+    </g>
+  ))}
+  <text x="15" y="277" font-size="4.2" fill="#1f1a17">Cuenta qué hiciste cuando un camino se cerró.</text>
+</SheetFrame>

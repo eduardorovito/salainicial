@@ -1,0 +1,28 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const pasos = [3, 1, 4, 2];
+const bloques = [
+  { x: 17, y: 64, ancho: 51 },
+  { x: 24, y: 52, ancho: 37 },
+  { x: 30, y: 40, ancho: 25 },
+];
+---
+
+<SheetFrame title="¿Qué pasó primero?" label="Cuatro tarjetas para recortar y ordenar. Muestran uno, dos y tres bloques y una torre terminada con una bandera">
+  <text x="15" y="50" font-size="4.4" fill="#1f1a17">Recorta las tarjetas, ordénalas y cuenta qué cambió.</text>
+  {pasos.map((paso, i) => (
+    <g transform={`translate(${15 + (i % 2) * 94} ${58 + Math.floor(i / 2) * 103})`} fill="none" stroke="#292421" stroke-linejoin="round">
+      <rect width="86" height="96" rx="3" stroke-width="0.55" stroke-dasharray="2 1.5" />
+      <path d="M10 76h66" stroke-width="0.6" />
+      {bloques.slice(0, paso).map(({ x, y, ancho }) => (
+        <g stroke-width="0.85">
+          <rect x={x} y={y} width={ancho} height="12" rx="1" />
+          <path d={`M${x + 4} ${y + 5}h${ancho - 8}`} stroke-width="0.35" />
+        </g>
+      ))}
+      {paso === 4 && <path d="M43 40V18l17 6-17 7" stroke-width="0.85" />}
+    </g>
+  ))}
+  <text x="15" y="276" font-size="4.4" fill="#1f1a17">Dibuja en el dorso lo que podría pasar después.</text>
+</SheetFrame>

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "sala-inicial.vercel.app" }], "destination": "https://salainicial.com/$1", "permanent": true },
+    { "source": "/articulos", "destination": "/blog/", "permanent": true },
+    { "source": "/articulos/(.*)", "destination": "/blog/$1", "permanent": true },
+    { "source": "/juegos/kamishibai-teatro-de-papel", "destination": "/cuentos/kamishibai-teatro-de-papel/", "permanent": true },
+    { "source": "/juegos/kamishibai-teatro-de-papel/", "destination": "/cuentos/kamishibai-teatro-de-papel/", "permanent": true },
+    { "source": "/juegos/origami-facil-para-preescolar", "destination": "/actividades/origami-facil-para-preescolar/", "permanent": true },
+    { "source": "/juegos/origami-facil-para-preescolar/", "destination": "/actividades/origami-facil-para-preescolar/", "permanent": true }
+  ]
+}

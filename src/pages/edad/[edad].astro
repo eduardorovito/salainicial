@@ -1,0 +1,39 @@
+---
+import ListPage from '../../components/ListPage.astro';
+import type { FotoId } from '../../data/fotos';
+import { edades } from '../../site.config.mjs';
+import { getRecursos } from '../../lib/recursos';
+
+const fotosEdad: Record<string, FotoId> = { '3': 'juguetes', '4': 'bosque', '5': 'portada' };
+
+const intros: Record<string, string> = {
+  '3': 'A los 3 años todo es nuevo: la escuela, el grupo, las rutinas. Aquí hay propuestas cortas, con mucho movimiento y exploración, fichas sencillas y materiales para acompañar el período de adaptación.',
+  '4': 'A los 4 años crece el juego de roles, aparecen las preguntas sobre cómo funcionan las cosas y el grupo empieza a sostener proyectos más largos. Estas fichas y actividades aprovechan esa curiosidad.',
+  '5': 'A los 5 años se juega con reglas, se cuenta, se registra y se escribe el propio nombre. Fichas de vocales, números y trazos, y propuestas para un año de muchos avances antes de la primaria.',
+};
+
+export async function getStaticPaths() {
+  const recursos = await getRecursos();
+  return edades.map((edad) => ({
+    params: { edad: `${edad}-anos` },
+    props: {
+      edad,
+      recursos: recursos
+        .filter((r) => r.data.edades.length === 0 || r.data.edades.includes(edad as '3' | '4' | '5'))
+        .sort((a, b) => Number(b.data.category === 'fichas') - Number(a.data.category === 'fichas')),
+    },
+  }));
+}
+
+const { edad, recursos } = Astro.props;
+---
+
+<ListPage
+  title={`Recursos para docentes con niños de ${edad} años: fichas y actividades`}
+  heading={`Recursos para ${edad} años`}
+  intro={intros[edad]}
+  description={`Fichas para imprimir, planificaciones y juegos para docentes con niños de ${edad} años. Recursos gratis para docentes de educación inicial y preescolar.`}
+  recursos={recursos}
+  foto={fotosEdad[edad]}
+  showCategory
+/>

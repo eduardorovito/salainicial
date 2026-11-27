@@ -1,0 +1,24 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const lugares = ['Lugar 1', 'Lugar 2'];
+---
+
+<SheetFrame title="Mi mapa de sonidos" label="Dos recuadros para dibujar o marcar qué se oyó en dos lugares de la escuela.">
+  <g fill="#1f1a17" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" font-size="4.7">
+    <text x="15" y="52">Haz una pausa en cada lugar y escucha con tu grupo.</text>
+    <text x="15" y="60">Dibuja o marca algo que oíste.</text>
+    {lugares.map((lugar, indice) => (
+      <g transform={`translate(0 ${74 + indice * 98})`}>
+        <rect x="15" y="0" width="180" height="89" rx="4" fill="none" stroke="#796f67" stroke-width=".55" />
+        <text x="22" y="14" font-size="6" font-weight="700">{lugar}</text>
+        <path d="M47 14.5h107" fill="none" stroke="#796f67" stroke-width=".45" />
+        <g transform="translate(164 6)" fill="none" stroke="#1f1a17" stroke-width="0.8" stroke-linecap="round">
+          <path d="M0 4h4l5-4v14l-5-4H0Z M12 4c2 1.5 2 4.5 0 6 M15 1c4 3 4 9 0 12" />
+        </g>
+        <path d="M22 24h166" fill="none" stroke="#796f67" stroke-width=".45" />
+      </g>
+    ))}
+    <text x="15" y="276" font-weight="700">¿Qué fue igual o diferente entre los dos lugares?</text>
+  </g>
+</SheetFrame>

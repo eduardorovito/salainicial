@@ -1,0 +1,36 @@
+---
+import { site } from '../site.config.mjs';
+
+const slots = {
+  home: import.meta.env.PUBLIC_ADSENSE_HOME_SLOT,
+  inArticle: import.meta.env.PUBLIC_ADSENSE_IN_ARTICLE_SLOT,
+  endOfArticle: import.meta.env.PUBLIC_ADSENSE_END_OF_ARTICLE_SLOT,
+};
+
+interface Props {
+  placement: keyof typeof slots;
+  class?: string;
+}
+const { placement, class: className } = Astro.props;
+const client = site.adsense.client;
+const slotId = slots[placement]?.trim() ?? '';
+---
+
+{
+  client && /^\d+$/.test(slotId) && (
+    <aside class:list={['ad-slot', { 'ad-slot--home': placement === 'home' }, className]} aria-label="Publicidad">
+      <span class="ad-label">Publicidad</span>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={client}
+        data-ad-slot={slotId}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+      <script is:inline>
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </aside>
+  )
+}

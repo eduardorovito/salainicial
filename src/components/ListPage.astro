@@ -1,0 +1,126 @@
+---
+// Plantilla para las páginas de sección y de edad.
+import Base from '../layouts/Base.astro';
+import ResourceRow from './ResourceRow.astro';
+import Foto from './Foto.astro';
+import { fotosSinRepetir, type FotoId } from '../data/fotos';
+import type { Recurso } from '../lib/recursos';
+
+interface Props {
+  title: string;
+  heading: string;
+  intro: string;
+  description: string;
+  recursos: Recurso[];
+  cat?: string;
+  foto?: FotoId;
+  showCategory?: boolean;
+  ogImage?: string;
+}
+const { title, heading, intro, description, recursos, cat, foto, showCategory = false, ogImage } = Astro.props;
+const filas = fotosSinRepetir(recursos, foto ? [foto] : []);
+---
+
+<Base title={title} description={description} ogImage={ogImage}>
+  <header class="container list-head" data-cat={cat ?? 'fichas'} data-plain={cat ? undefined : ''}>
+    <div class="list-head-inner">
+      <div class="list-text">
+        <nav class="breadcrumb" aria-label="Ruta"><a href="/">Inicio</a></nav>
+        <h1>{heading}</h1>
+        <p>{intro}</p>
+      </div>
+      {
+        foto && (
+          <div class="list-media">
+            <Foto id={foto} class="list-photo" sizes="(min-width: 60rem) 26rem, 100vw" eager />
+          </div>
+        )
+      }
+    </div>
+  </header>
+  <div class="container">
+    {
+      recursos.length > 0 ? (
+        <section aria-labelledby="list-resources">
+          <h2 id="list-resources" class="visually-hidden">Recursos disponibles</h2>
+          <ul class="resource-list">
+            {filas.map(({ recurso, foto: miniatura }) => (
+              <li>
+                <ResourceRow recurso={recurso} foto={miniatura} showCategory={showCategory} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : (
+        <p class="empty">
+          Todavía no hay recursos en esta sección. Estamos preparando los primeros; mientras tanto, mira las
+          <a href="/fichas/">fichas para imprimir</a>.
+        </p>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  /* Encabezado en un panel redondeado de color, con la foto de la sección */
+  .list-head {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-7);
+  }
+  .list-head-inner {
+    display: grid;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--cat);
+    color: var(--on-cat);
+  }
+  .list-head[data-plain] .list-head-inner {
+    background: var(--paper-2);
+    color: var(--ink);
+  }
+  @media (min-width: 60rem) {
+    .list-head-inner {
+      grid-template-columns: 1fr 26rem;
+      align-items: center;
+      gap: var(--space-8);
+      padding: var(--space-5) var(--space-5) var(--space-5) var(--space-7);
+    }
+  }
+  .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--step--1);
+    font-weight: 700;
+    color: inherit;
+  }
+  .breadcrumb a:focus-visible { outline-color: currentColor; }
+  .list-head h1 {
+    margin-top: var(--space-1);
+  }
+  .list-head p {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: inherit;
+    max-width: 56ch;
+  }
+
+  .list-media :global(.list-photo) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: calc(var(--radius-lg) - 8px);
+  }
+  @media (min-width: 60rem) {
+    .list-media :global(.list-photo) {
+      aspect-ratio: 4 / 3.4;
+    }
+  }
+  .empty {
+    color: var(--ink-2);
+  }
+</style>

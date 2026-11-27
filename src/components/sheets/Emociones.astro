@@ -1,0 +1,86 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+// Seis caras con emociones básicas y un círculo grande para dibujar la propia.
+const ink = '#1f1a17';
+const body = "'Atkinson Hyperlegible Next', Arial, sans-serif";
+const sheetFont = "Andika, 'Atkinson Hyperlegible Next', Arial, sans-serif";
+
+const ojo = (x: number, y: number, r = 1.5) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${ink}" stroke="none" />`;
+const ojoAbierto = (x: number, y: number) => `<circle cx="${x}" cy="${y}" r="2.5" />${ojo(x, y, 1)}`;
+
+const caras = [
+  {
+    nombre: 'alegría',
+    draw: (cx: number, cy: number) =>
+      ojo(cx - 6, cy - 3) + ojo(cx + 6, cy - 3) + `<path d="M${cx - 8},${cy + 4} Q${cx},${cy + 13} ${cx + 8},${cy + 4}" />`,
+  },
+  {
+    nombre: 'tristeza',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 9},${cy - 7} L${cx - 4},${cy - 9.5}" /><path d="M${cx + 4},${cy - 9.5} L${cx + 9},${cy - 7}" />` +
+      ojo(cx - 6, cy - 3) +
+      ojo(cx + 6, cy - 3) +
+      `<path d="M${cx - 6},${cy + 10} Q${cx},${cy + 4} ${cx + 6},${cy + 10}" />` +
+      `<path d="M${cx + 6},${cy + 0.5} q-1.8,2.8 0,4 q1.8,-1.2 0,-4 Z" />`,
+  },
+  {
+    nombre: 'enojo',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 9},${cy - 9.5} L${cx - 3.5},${cy - 6.5}" /><path d="M${cx + 3.5},${cy - 6.5} L${cx + 9},${cy - 9.5}" />` +
+      ojo(cx - 6, cy - 3) +
+      ojo(cx + 6, cy - 3) +
+      `<path d="M${cx - 6},${cy + 9} Q${cx},${cy + 5} ${cx + 6},${cy + 9}" />`,
+  },
+  {
+    nombre: 'miedo',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 9},${cy - 7.5} L${cx - 4},${cy - 10}" /><path d="M${cx + 4},${cy - 10} L${cx + 9},${cy - 7.5}" />` +
+      ojoAbierto(cx - 6, cy - 3) +
+      ojoAbierto(cx + 6, cy - 3) +
+      `<path d="M${cx - 6},${cy + 8} l2,-1.8 l2,1.8 l2,-1.8 l2,1.8 l2,-1.8" />`,
+  },
+  {
+    nombre: 'sorpresa',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 9},${cy - 9} Q${cx - 6},${cy - 12.5} ${cx - 3},${cy - 9.5}" /><path d="M${cx + 3},${cy - 9.5} Q${cx + 6},${cy - 12.5} ${cx + 9},${cy - 9}" />` +
+      ojoAbierto(cx - 6, cy - 3) +
+      ojoAbierto(cx + 6, cy - 3) +
+      `<ellipse cx="${cx}" cy="${cy + 8}" rx="3" ry="4" />`,
+  },
+  {
+    nombre: 'calma',
+    draw: (cx: number, cy: number) =>
+      `<path d="M${cx - 8.5},${cy - 3} Q${cx - 6},${cy - 0.5} ${cx - 3.5},${cy - 3}" /><path d="M${cx + 3.5},${cy - 3} Q${cx + 6},${cy - 0.5} ${cx + 8.5},${cy - 3}" />` +
+      `<path d="M${cx - 5},${cy + 6} Q${cx},${cy + 9.5} ${cx + 5},${cy + 6}" />`,
+  },
+];
+
+const celdas = caras.map((c, i) => {
+  const col = i % 3;
+  const row = Math.floor(i / 3);
+  const x = 15 + col * 61;
+  const y = 56 + row * 72;
+  return { ...c, x, y, cx: x + 29, cy: y + 30 };
+});
+---
+
+<SheetFrame title="¿Cómo se siente?" label="Ficha de emociones con seis caras: alegría, tristeza, enojo, miedo, sorpresa y calma, y un círculo grande para dibujar la propia cara">
+  <text x="15" y="49" font-size="4" fill="#4a423d" font-family={body}>
+    Nombren juntos cada emoción. Pinta la cara que se parece a cómo te sientes hoy.
+  </text>
+  {
+    celdas.map((c) => (
+      <g>
+        <rect x={c.x} y={c.y} width="58" height="68" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+        <circle cx={c.cx} cy={c.cy} r="17" fill="#fff" stroke={ink} stroke-width="0.8" />
+        <g fill="none" stroke={ink} stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" set:html={c.draw(c.cx, c.cy)} />
+        <text x={c.cx} y={c.y + 60} font-size="6" font-family={sheetFont} font-weight="700" text-anchor="middle" fill={ink}>{c.nombre}</text>
+      </g>
+    ))
+  }
+  <rect x="15" y="204" width="180" height="72" rx="4" fill="none" stroke="#c9c1bb" stroke-width="0.4" />
+  <text x="24" y="226" font-size="6.5" font-family={sheetFont} font-weight="700" fill={ink}>Hoy me siento así:</text>
+  <text x="24" y="236" font-size="4.2" font-family={body} fill="#4a423d">Dibuja tu cara en el círculo.</text>
+  <circle cx="150" cy="240" r="27" fill="none" stroke={ink} stroke-width="0.8" />
+</SheetFrame>

@@ -1,0 +1,67 @@
+---
+import Base from '../../layouts/Base.astro';
+import { paises, tiposAporte } from '../../lib/comunidad';
+import '../../styles/comunidad-cms.css';
+const configurada = Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+---
+<Base title="Panel docente" description="Gestiona tu perfil y tus aportes a la comunidad de Salainicial." noindex ads={false}>
+  <div class="container cms" data-cms-panel={configurada ? '' : undefined}>
+    <nav class="breadcrumb" aria-label="Ruta"><a href="/comunidad/">Comunidad</a> <span aria-hidden="true">/</span> Panel docente</nav>
+    <h1>Mi panel docente</h1>
+    <p data-access><a href="/comunidad/#participa">Accede desde la comunidad</a> para gestionar tu perfil y aportes.</p>
+    <p class="cms-status" role="status" data-status></p>
+    <div class="cms-stack" data-member hidden>
+      <div class="cms-row">
+        <a href="/comunidad/#foro">Ir al foro docente</a>
+        <a href="/comunidad/aportes/">Ver aportes de la comunidad</a>
+        <button class="button button--quiet" type="button" data-exit>Cerrar sesión</button>
+      </div>
+      <section class="cms-card cms-stack">
+        <h2>Mi perfil</h2>
+        <p class="cms-meta" data-certification hidden>Perfil certificado por Salainicial.</p>
+        <form method="post" class="cms-stack" data-profile>
+          <label class="cms-field">Nombre público<input name="display_name" required minlength="2" maxlength="48" autocomplete="nickname" /></label>
+          <label class="cms-field">País de trabajo
+            <select name="country"><option value="">Prefiero no indicarlo</option>{paises.map(({ id, nombre }) => <option value={id}>{nombre}</option>)}</select>
+          </label>
+          <div><button class="button" type="submit">Guardar perfil</button></div>
+        </form>
+      </section>
+      <section class="cms-card cms-stack" data-editor hidden>
+        <h2>Mis aportes</h2>
+        <form method="post" class="cms-stack" data-draft>
+          <label class="cms-field">Tipo
+            <select name="kind">{tiposAporte.map(({ id, nombre }) => <option value={id}>{nombre}</option>)}</select>
+          </label>
+          <label class="cms-field">País al que aplica
+            <select name="country"><option value="">General</option>{paises.map(({ id, nombre }) => <option value={id}>{nombre}</option>)}</select>
+          </label>
+          <label class="cms-field">Título<input name="title" required minlength="8" maxlength="120" /></label>
+          <label class="cms-field">Descripción y materiales<textarea name="body" required minlength="20" maxlength="8000" rows="7"></textarea></label>
+          <p class="cms-meta">Incluye los pasos o enlaces a los materiales. Evita publicar información que identifique a estudiantes o familias.</p>
+          <div class="cms-row"><button class="button" type="submit">Guardar borrador</button><button class="button button--quiet" type="button" data-new hidden>Crear otro aporte</button></div>
+        </form>
+        <div class="cms-stack" data-drafts></div>
+        <div><button class="button button--quiet" type="button" data-more-drafts hidden>Ver más aportes propios</button></div>
+      </section>
+      <section class="cms-card cms-stack" data-admin hidden>
+        <h2>Administración</h2>
+        <h3>Usuarios y certificación</h3>
+        <p class="cms-meta">Certifica un perfil después de revisar la información de la persona docente.</p>
+        <div class="cms-stack" data-users></div>
+        <div><button class="button button--quiet" type="button" data-more-users hidden>Ver más usuarios</button></div>
+        <h3>Aportes en revisión</h3>
+        <div class="cms-stack" data-queue></div>
+        <div><button class="button button--quiet" type="button" data-more-review hidden>Ver más aportes</button></div>
+        <h3>Reportes del foro</h3>
+        <div class="cms-stack" data-reports></div>
+        <div><button class="button button--quiet" type="button" data-more-reports hidden>Ver más reportes</button></div>
+      </section>
+    </div>
+  </div>
+</Base>
+<script>
+  import { iniciarPanel } from '../../lib/comunidad-cms';
+  const root = document.querySelector<HTMLElement>('[data-cms-panel]');
+  if (root) iniciarPanel(root);
+</script>

@@ -1,0 +1,25 @@
+---
+import SheetFrame from './SheetFrame.astro';
+
+const pruebas = [
+  { titulo: 'Toalla de papel', path: 'M0 1h18v14H0z M4 4h10 M4 8h10 M4 12h10' },
+  { titulo: 'Lámina de plástico', path: 'M0 1h18v14H0z M2 12 15 3 M6 12l5-4' },
+];
+---
+
+<SheetFrame title="¿Qué pasó con la gota?" label="Ficha para dibujar el agua sobre una toalla de papel y sobre una lámina de plástico después de comparar ambos materiales.">
+  <g fill="#1f1a17" font-family="'Atkinson Hyperlegible Next', Arial, sans-serif" font-size="4.7">
+    <text x="15" y="52">Pon una gota en cada material y mira qué sucede.</text>
+    <text x="15" y="60">Dibuja dónde ves la gota o la zona mojada.</text>
+    <path d="M182 49c-3 5-5 7-5 10a5 5 0 0 0 10 0c0-3-2-5-5-10Z" fill="none" stroke="#1f1a17" stroke-width=".8" />
+    {pruebas.map(({ titulo, path }, indice) => (
+      <g transform={`translate(0 ${74 + indice * 101})`}>
+        <rect x="15" y="0" width="180" height="89" rx="4" fill="none" stroke="#796f67" stroke-width=".55" />
+        <text x="22" y="14" font-size="6" font-weight="700">{titulo}</text>
+        <path d={path} transform="translate(165 5)" fill="none" stroke="#1f1a17" stroke-width=".7" stroke-linejoin="round" stroke-linecap="round" />
+        <path d="M22 25h166" fill="none" stroke="#796f67" stroke-width=".45" />
+      </g>
+    ))}
+    <text x="15" y="276" font-weight="700">¿Dónde quedó la gota encima? ¿Dónde se mojó el material?</text>
+  </g>
+</SheetFrame>

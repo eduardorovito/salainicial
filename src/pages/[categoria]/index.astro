@@ -1,0 +1,27 @@
+---
+import ListPage from '../../components/ListPage.astro';
+import type { FotoId } from '../../data/fotos';
+import { categories } from '../../site.config.mjs';
+import { getRecursos } from '../../lib/recursos';
+
+export async function getStaticPaths() {
+  const recursos = await getRecursos();
+  return categories.map((cat) => ({
+    params: { categoria: cat.id },
+    props: { cat, recursos: recursos.filter((r) => r.data.category === cat.id) },
+  }));
+}
+
+const { cat, recursos } = Astro.props;
+---
+
+<ListPage
+  title={cat.seoTitle ?? `${cat.name} para educación inicial`}
+  heading={cat.name}
+  intro={cat.intro}
+  description={`${cat.name} para educación inicial y preescolar: ${cat.short.toLowerCase()}. Para docentes que trabajan con niños de 3 a 5 años.`}
+  recursos={recursos}
+  cat={cat.id}
+  foto={cat.foto as FotoId}
+  ogImage={`/og/${cat.id}.jpg`}
+/>
